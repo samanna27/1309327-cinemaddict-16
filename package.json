@@ -27,6 +27,8 @@
     "node": "16"
   },
   "dependencies": {
+    "dayjs": "^1.10.7",
+    "nanoid": "^3.1.30",
     "webpack": "^5.64.4",
     "webpack-cli": "^4.9.1"
   }
