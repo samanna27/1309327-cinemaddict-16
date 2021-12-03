@@ -7,7 +7,7 @@ const createFilterItemTemplate = (filter) => {
     ${count === 0 ? 'disabled' : ''}>
     ${name}
     <span class="main-navigation__item-count">${count}</span>
-    </a>`)
+    </a>`);
 };
 
 export const createMenuFiltersTemplate = (filters) => {

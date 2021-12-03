@@ -52,7 +52,7 @@ export const createFilmDetailsTemplate = (film) => {
             <tr class="film-details__row">
               <td class="film-details__term">Genres</td>
               <td class="film-details__cell">
-                ${genre.slice().map((genre)=>`<span class="film-details__genre">${genre}</span>`).join(' ')}
+                ${genre.slice().map((item)=>`<span class="film-details__genre">${item}</span>`).join(' ')}
               </td>
             </tr>
           </table>
@@ -68,5 +68,5 @@ export const createFilmDetailsTemplate = (film) => {
         <button type="button" class="film-details__control-button film-details__control-button--watched ${isAlreadyWatched? 'film-details__control-button--active': ''}" id="watched" name="watched">Already watched</button>
         <button type="button" class="film-details__control-button film-details__control-button--favorite ${isFavorite? 'film-details__control-button--active': ''}" id="favorite" name="favorite">Add to favorites</button>
       </section>
-    </div>`
+    </div>`;
 };

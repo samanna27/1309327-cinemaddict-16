@@ -22,5 +22,5 @@ export const createFilmCardTemplate = (film) => {
       <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${isAlreadyWatched? 'film-card__controls-item--active': ''}" type="button">Mark as watched</button>
       <button class="film-card__controls-item film-card__controls-item--favorite ${isFavorite? 'film-card__controls-item--active': ''}" type="button">Mark as favorite</button>
     </div>
-  </article>`
+  </article>`;
 };

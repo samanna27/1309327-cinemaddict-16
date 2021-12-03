@@ -28,7 +28,7 @@ const filters = generateFilter(films);
 
 const siteHeaderElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
-const siteFooterElement = document.querySelector('.footer')
+const siteFooterElement = document.querySelector('.footer');
 const siteFooterStatisticsElement = document.querySelector('.footer__statistics');
 
 renderTemplate(siteHeaderElement, createUserProfileTemplate(), renderPosition.BEFOREEND);
@@ -39,7 +39,7 @@ const menuElement = siteMainElement.querySelector('.main-navigation');
 renderTemplate(menuElement, createMenuFiltersTemplate(filters), renderPosition.BEFOREEND);
 
 document.querySelectorAll('.main-navigation__item')
-  .forEach((item) => item.addEventListener("click", isCurrentFilter));
+  .forEach((item) => item.addEventListener('click', isCurrentFilter));
 
 renderTemplate(menuElement, createMenuStatisticsTemplate(), renderPosition.BEFOREEND);
 renderTemplate(siteMainElement, createSortFilmsTemplate(), renderPosition.BEFOREEND);
@@ -66,7 +66,7 @@ if(films.length > FILM_CARD_COUNT_PER_STEP) {
 
   const showMoreButton = allFilmsSectionElement.querySelector('.films-list__show-more');
 
-  showMoreButton.addEventListener("click", (evt) => {
+  showMoreButton.addEventListener('click', (evt) => {
     evt.preventDefault();
     films.slice(renderedFilmsCount, renderedFilmsCount+FILM_CARD_COUNT_PER_STEP).forEach((film) =>
       renderTemplate(allFilmsListElement, createFilmCardTemplate(film), renderPosition.BEFOREEND));

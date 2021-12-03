@@ -16,5 +16,5 @@ export const createCommentTemplate = (commentId) => {
         <button class="film-details__comment-delete">Delete</button>
       </p>
     </div>
-   </li>`
+   </li>`;
 };
