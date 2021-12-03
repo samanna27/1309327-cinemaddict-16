@@ -1,0 +1,2 @@
+export const FILM_CARD_COUNT_PER_STEP = 5;
+export const TOP_COMMENTED_FILM_CARD_COUNT = 2;
