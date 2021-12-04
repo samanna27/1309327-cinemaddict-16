@@ -21,7 +21,7 @@ import {createNewCommentTemplate} from './view/new-comment';
 import {createCommentsContainerTemplate} from './view/comments-container';
 import {createCommentTemplate} from './view/comment';
 import {generateFilter} from './mock/filter';
-import {handleFilterChange} from './utils/common';
+import {filterChangeHandler} from './utils/common';
 
 const films = Array.from({length: FILM_CARD_MOCK_COUNT}, generateFilm);
 const filters = generateFilter(films);
@@ -39,7 +39,7 @@ const menuElement = siteMainElement.querySelector('.main-navigation');
 renderTemplate(menuElement, createMenuFiltersTemplate(filters), renderPosition.BEFOREEND);
 
 document.querySelectorAll('.main-navigation__item')
-  .forEach((item) => item.addEventListener('click', handleFilterChange));
+  .forEach((item) => item.addEventListener('click', filterChangeHandler));
 
 renderTemplate(menuElement, createMenuStatisticsTemplate(), renderPosition.BEFOREEND);
 renderTemplate(siteMainElement, createSortFilmsTemplate(), renderPosition.BEFOREEND);
