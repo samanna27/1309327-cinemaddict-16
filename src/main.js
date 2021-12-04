@@ -21,7 +21,7 @@ import {createNewCommentTemplate} from './view/new-comment';
 import {createCommentsContainerTemplate} from './view/comments-container';
 import {createCommentTemplate} from './view/comment';
 import {generateFilter} from './mock/filter';
-import {isCurrentFilter} from './utils/common';
+import {handleFilterChange} from './utils/common';
 
 const films = Array.from({length: FILM_CARD_MOCK_COUNT}, generateFilm);
 const filters = generateFilter(films);
@@ -39,7 +39,7 @@ const menuElement = siteMainElement.querySelector('.main-navigation');
 renderTemplate(menuElement, createMenuFiltersTemplate(filters), renderPosition.BEFOREEND);
 
 document.querySelectorAll('.main-navigation__item')
-  .forEach((item) => item.addEventListener('click', isCurrentFilter));
+  .forEach((item) => item.addEventListener('click', handleFilterChange));
 
 renderTemplate(menuElement, createMenuStatisticsTemplate(), renderPosition.BEFOREEND);
 renderTemplate(siteMainElement, createSortFilmsTemplate(), renderPosition.BEFOREEND);
@@ -89,13 +89,11 @@ renderTemplate(commentedFilmsContainerElement, createFilmsContainerTemplate(), r
 const topFilmsListElement = topFilmsContainerElement.querySelector('.films-list__container');
 const commentedFilmsListElement = commentedFilmsContainerElement.querySelector('.films-list__container');
 
-for (let i = 0; i < TOP_COMMENTED_FILM_CARD_COUNT; i++) {
-  renderTemplate(topFilmsListElement, createFilmCardTemplate(films[i]), renderPosition.BEFOREEND);
-}
+films.slice(0,TOP_COMMENTED_FILM_CARD_COUNT).forEach((film)=>
+  renderTemplate(topFilmsListElement, createFilmCardTemplate(film), renderPosition.BEFOREEND));
 
-for (let i = 0; i < TOP_COMMENTED_FILM_CARD_COUNT; i++) {
-  renderTemplate(commentedFilmsListElement, createFilmCardTemplate(films[i]), renderPosition.BEFOREEND);
-}
+films.slice(0,TOP_COMMENTED_FILM_CARD_COUNT).forEach((film)=>
+  renderTemplate(commentedFilmsListElement, createFilmCardTemplate(film), renderPosition.BEFOREEND));
 
 renderTemplate(siteFooterStatisticsElement, createFooterStatisticsTemplate(), renderPosition.BEFOREEND);
 
