@@ -1,6 +1,7 @@
 import {generateComment} from '../mock/comments';
+import {createElement} from '../utils/render';
 
-export const createCommentTemplate = (commentId) => {
+const createCommentTemplate = (commentId) => {
   const comment = generateComment(commentId);
   const {emoji, text, author, date} =comment;
 
@@ -18,3 +19,28 @@ export const createCommentTemplate = (commentId) => {
     </div>
    </li>`;
 };
+
+export default class CommentView {
+  #element = null;
+  #commentId = null;
+
+  constructor(commentId = '') {
+    this.#commentId=commentId;
+  }
+
+  get element() {
+    if(!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createCommentTemplate(this.#commentId);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

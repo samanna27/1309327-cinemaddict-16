@@ -11,3 +11,25 @@ export const GENRES = [
   'Cartoon',
   'Mystery',
 ];
+
+export const BLANK_FILM = {
+  id: '',
+  title: '',
+  originalTitle: '',
+  poster: null,
+  ageConstraint: 0,
+  description: [],
+  rating: 0,
+  director: [],
+  actors: [],
+  writers: [],
+  releaseDate: '',
+  duration: '',
+  country: [],
+  genre: '',
+  commentsIds: [],
+  isAddedToWatchlist:  false,
+  isAlreadyWatched: false,
+  isFavorite: false,
+  watchedDate: '',
+};

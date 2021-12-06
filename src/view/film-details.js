@@ -1,4 +1,7 @@
-export const createFilmDetailsTemplate = (film) => {
+import {createElement} from '../utils/render';
+import {BLANK_FILM} from '../const';
+
+const createFilmDetailsTemplate = (film) => {
   const {poster, title, originalTitle, ageConstraint, rating, director, actors, writers, releaseDate, duration, country, genre, description, isAddedToWatchlist, isAlreadyWatched, isFavorite} = film;
 
   return `<div class="film-details__top-container">
@@ -70,3 +73,28 @@ export const createFilmDetailsTemplate = (film) => {
       </section>
     </div>`;
 };
+
+export default class FilmDetailsView {
+  #element = null;
+  #film = null;
+
+  constructor(film = BLANK_FILM) {
+    this.#film=film;
+  }
+
+  get element() {
+    if(!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createFilmDetailsTemplate(this.#film);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

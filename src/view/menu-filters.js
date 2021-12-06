@@ -1,3 +1,5 @@
+import {createElement} from '../utils/render';
+
 const createFilterItemTemplate = (filter) => {
   const {name, count} = filter;
 
@@ -10,7 +12,7 @@ const createFilterItemTemplate = (filter) => {
     </a>`);
 };
 
-export const createMenuFiltersTemplate = (filters) => {
+const createMenuFiltersTemplate = (filters) => {
   const {name, count} = filters[0];
   const filterItemsTemplate = filters.map((filter) => createFilterItemTemplate(filter)).slice(1).join('');
 
@@ -25,3 +27,28 @@ export const createMenuFiltersTemplate = (filters) => {
     </div>`
   );
 };
+
+export default class MenuFiltersView {
+  #element = null;
+  #filters = null;
+
+  constructor(filters) {
+    this.#filters = filters;
+  }
+
+  get element() {
+    if(!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createMenuFiltersTemplate(this.#filters);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

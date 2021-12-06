@@ -1,4 +1,6 @@
-export const createNewCommentTemplate = () => (
+import {createElement} from '../utils/render';
+
+const createNewCommentTemplate = () => (
   `<div class="film-details__new-comment">
     <div class="film-details__add-emoji-label"></div>
 
@@ -9,23 +11,43 @@ export const createNewCommentTemplate = () => (
     <div class="film-details__emoji-list">
       <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
       <label class="film-details__emoji-label" for="emoji-smile">
-        <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
+        <img src="../../public/images/emoji/smile.png" width="30" height="30" alt="emoji">
       </label>
 
       <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
       <label class="film-details__emoji-label" for="emoji-sleeping">
-        <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
+        <img src="../../public/images/emoji/sleeping.png" width="30" height="30" alt="emoji">
       </label>
 
       <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
       <label class="film-details__emoji-label" for="emoji-puke">
-        <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
+        <img src="../../public/images/emoji/puke.png" width="30" height="30" alt="emoji">
       </label>
 
       <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
       <label class="film-details__emoji-label" for="emoji-angry">
-        <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
+        <img src="../../public/images/emoji/angry.png" width="30" height="30" alt="emoji">
       </label>
     </div>
   </div>`
 );
+
+export default class NewCommentView {
+  #element = null;
+
+  get element() {
+    if(!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createNewCommentTemplate();
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
