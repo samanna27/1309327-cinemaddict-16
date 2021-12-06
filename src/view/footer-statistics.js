@@ -1,11 +1,15 @@
 import {createElement} from '../utils/render';
 
-const createFooterStatisticsTemplate = () => (
-  '<p>130 291 movies inside</p>'
-);
+const createFooterStatisticsTemplate = (films) => `<p>${films.length} movies inside</p>`;
 
 export default class FooterStatisticsView {
   #element = null;
+  #films = null;
+
+  constructor(films) {
+    this.#films = films;
+  }
+
 
   get element() {
     if(!this.#element) {
@@ -16,7 +20,7 @@ export default class FooterStatisticsView {
   }
 
   get template() {
-    return createFooterStatisticsTemplate();
+    return createFooterStatisticsTemplate(this.#films);
   }
 
   removeElement() {

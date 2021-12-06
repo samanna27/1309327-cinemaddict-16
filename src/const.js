@@ -1,6 +1,6 @@
 export const FILM_CARD_COUNT_PER_STEP = 5;
 export const TOP_COMMENTED_FILM_CARD_COUNT = 2;
-export const FILM_CARD_MOCK_COUNT = 20;
+export const FILM_CARD_MOCK_COUNT = 0;
 export const COMMENTS_QUANTITY = 100;
 export const COMMENTS_IN_FILM = 5;
 export const GENRES = [
@@ -32,4 +32,11 @@ export const BLANK_FILM = {
   isAlreadyWatched: false,
   isFavorite: false,
   watchedDate: '',
+};
+
+export const FilterType = {
+  ALL: 'All',
+  ADDED_TO_WATCHLIST: 'toWatchlist',
+  ALREADY_WATCHED: 'history',
+  FAVORITES: 'favorites',
 };
