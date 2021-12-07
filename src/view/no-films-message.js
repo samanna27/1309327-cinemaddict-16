@@ -1,4 +1,4 @@
-import {createElement} from '../utils/render';
+import AbstractView from './abstract-view';
 import {FilterType} from '../const.js';
 
 const NoFilmsTextType = {
@@ -19,28 +19,15 @@ const createNoFilmsTemplate = (filterType) => {
       </section>`);
 };
 
-export default class NoFilmsMessageView {
-  #element = null;
+export default class NoFilmsMessageView extends AbstractView {
   #filterType = null;
 
   constructor(filterType) {
-    // eslint-disable-next-line no-undef
+    super();
     this.#filterType = filterType;
-  }
-
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return  createNoFilmsTemplate(this.#filterType);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

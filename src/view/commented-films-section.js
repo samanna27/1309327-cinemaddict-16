@@ -1,4 +1,4 @@
-import {createElement} from '../utils/render';
+import AbstractView from './abstract-view';
 
 const createCommentedFilmsSectionTemplate = () => (
   `<section class="films-list films-list--extra">
@@ -6,22 +6,8 @@ const createCommentedFilmsSectionTemplate = () => (
    </section>`
 );
 
-export default class CommentedFilmsSectionView {
-  #element = null;
-
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
+export default class CommentedFilmsSectionView extends AbstractView {
   get template() {
     return createCommentedFilmsSectionTemplate();
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
