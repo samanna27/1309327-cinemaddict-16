@@ -1,7 +1,3 @@
-import NoFilmsMessageView from '../view/no-films-message';
-import {FilterType} from '../const';
-import {siteMainElement} from '../main';
-
 export const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
@@ -26,15 +22,5 @@ export const formatDescription = (fullDescription) => {
     return description;
   }
 };
-
-export function filterChangeHandler(event){
-  document.querySelectorAll('.main-navigation__item')
-    .forEach((item) => item.classList.remove('main-navigation__item--active'));
-  event.target.classList.add('main-navigation__item--active');
-  const index = event.target.href.indexOf('#',0);
-  const currentFilter = event.target.href.slice((index+1));
-  const filterKey = Object.keys(FilterType).find((key)=>FilterType[key] === currentFilter);
-  siteMainElement.replaceChild(new NoFilmsMessageView(FilterType[filterKey]).element, siteMainElement.lastChild);
-}
 
 export const isEscEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';

@@ -1,4 +1,4 @@
-import {createElement} from '../utils/render';
+import AbstractView from './abstract-view';
 
 const createFilterItemTemplate = (filter) => {
   const {name, count} = filter;
@@ -28,27 +28,26 @@ const createMenuFiltersTemplate = (filters) => {
   );
 };
 
-export default class MenuFiltersView {
-  #element = null;
+export default class MenuFiltersView extends AbstractView {
   #filters = null;
 
   constructor(filters) {
+    super();
     this.#filters = filters;
-  }
-
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createMenuFiltersTemplate(this.#filters);
   }
 
-  removeElement() {
-    this.#element = null;
+  setFilterClickHandler = (callback) => {
+    this._callback.filterClick = callback;
+    this.element.querySelectorAll('.main-navigation__item')
+      .forEach( (item) => item.addEventListener('click', this.#filterClickHandler));
+  }
+
+  #filterClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.filterClick(evt);
   }
 }

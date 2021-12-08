@@ -1,4 +1,4 @@
-import {createElement} from '../utils/render';
+import AbstractView from './abstract-view';
 import {BLANK_FILM} from '../const';
 
 const createPopUpBottomSectionTemplate = (film) => {
@@ -11,27 +11,15 @@ const createPopUpBottomSectionTemplate = (film) => {
    </div>`;
 };
 
-export default class PopUpBottomSectionView {
-  #element = null;
+export default class PopUpBottomSectionView extends AbstractView {
   #film = null;
 
   constructor(film = BLANK_FILM) {
+    super();
     this.#film=film;
-  }
-
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createPopUpBottomSectionTemplate(this.#film);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

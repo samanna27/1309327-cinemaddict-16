@@ -1,4 +1,4 @@
-import {createElement} from '../utils/render';
+import AbstractView from './abstract-view';
 
 const createPopUpContainerTemplate = () => (
   `<section class="film-details">
@@ -7,22 +7,18 @@ const createPopUpContainerTemplate = () => (
    </section>`
 );
 
-export default class PopUpContainerView {
-  #element = null;
-
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
+export default class PopUpContainerView extends AbstractView {
   get template() {
     return createPopUpContainerTemplate();
   }
 
-  removeElement() {
-    this.#element = null;
+  setPopupCloseHandler = (callback) => {
+    this._callback.popupClose = callback;
+    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#popupCloseHandler);
+  }
+
+  #popupCloseHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.popupClose();
   }
 }
