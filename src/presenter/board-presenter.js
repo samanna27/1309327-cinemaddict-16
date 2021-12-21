@@ -57,9 +57,13 @@ export default class BoardPresemter {
   #handleFilmChange = (updatedFilm) => {
     this.#boardFilms = updateItem(this.#boardFilms, updatedFilm);
     this.#sourceBoardFilms = updateItem(this.#boardFilms, updatedFilm);
-    if(this.#allFilmPresenter.has(updatedFilm.id)) {this.#allFilmPresenter.get(updatedFilm.id).init(updatedFilm);}
-    if(this.#topFilmPresenter.has(updatedFilm.id)) {this.#topFilmPresenter.get(updatedFilm.id).init(updatedFilm);}
-    if(this.#commentedFilmPresenter.has(updatedFilm.id)) {this.#commentedFilmPresenter.get(updatedFilm.id).init(updatedFilm);}
+
+    if(this.#allFilmPresenter.has(updatedFilm.id)) {
+      this.#allFilmPresenter.get(updatedFilm.id).init(updatedFilm);}
+    if(this.#topFilmPresenter.has(updatedFilm.id)) {
+      this.#topFilmPresenter.get(updatedFilm.id).init(updatedFilm);}
+    if(this.#commentedFilmPresenter.has(updatedFilm.id)) {
+      this.#commentedFilmPresenter.get(updatedFilm.id).init(updatedFilm);}
   }
 
   #sortFilms = (sortType) => {
