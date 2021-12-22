@@ -15,7 +15,7 @@ const filters = generateFilter(films);
 
 const siteHeaderElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
-export const siteFooterElement = document.querySelector('.footer');
+const siteFooterElement = document.querySelector('.footer');
 const siteFooterStatisticsElement = document.querySelector('.footer__statistics');
 
 const menuComponent = new MenuContainerView();
@@ -46,3 +46,5 @@ render(menuComponent, new MenuStatisticsView(), renderPosition.BEFOREEND);
 boardPresenter.init(films);
 
 render(siteFooterStatisticsElement, new FooterStatisticsView(films), renderPosition.BEFOREEND);
+
+export {siteFooterElement};

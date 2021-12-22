@@ -40,3 +40,9 @@ export const FilterType = {
   ALREADY_WATCHED: 'history',
   FAVORITES: 'favorites',
 };
+
+export const SortType = {
+  DEFAULT: 'default',
+  DATE_DOWN: 'date-down',
+  RATING_DOWN: 'rating-down',
+};
