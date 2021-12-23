@@ -46,4 +46,9 @@ export const BLANK_COMMENT = {
   emoji: '',
   text: '',
   date: '',
+
+export const SortType = {
+  DEFAULT: 'default',
+  DATE_DOWN: 'date-down',
+  RATING_DOWN: 'rating-down',
 };
