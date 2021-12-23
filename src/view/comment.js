@@ -1,15 +1,6 @@
-import {comments} from '../main.js';
 import AbstractView from './abstract-view';
 
-const createCommentTemplate = (commentId) => {
-  const requiredComment = (element) => {
-    if(element.id === commentId) {
-      return element;
-    }
-    return false;
-  };
-
-  const comment = comments.find(requiredComment);
+const createCommentTemplate = (comment) => {
   const {emoji, text, author, date} = comment;
 
   return `<li class="film-details__comment">

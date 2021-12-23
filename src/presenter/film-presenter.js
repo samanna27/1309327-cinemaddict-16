@@ -110,10 +110,19 @@ export default class FilmPresenter {
 
   #renderCommentsList = (container) => {
     const commentsListComponent = new CommentsContainerView();
+
     render(container, commentsListComponent, renderPosition.BEFOREEND);
 
     for ( const commentId of this._film.commentsIds) {
-      const commentComponent = new CommentView(commentId);
+      const requiredComment = (element) => {
+        if(element.id === commentId) {
+          return element;
+        }
+        return false;
+      };
+      const comment = comments.find(requiredComment);
+      const commentComponent = new CommentView(comment);
+
       render(commentsListComponent, commentComponent, renderPosition.BEFOREEND);
       commentComponent.setCommentDeleteHandler(this.deleteCommentHandler);
     }

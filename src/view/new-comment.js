@@ -39,6 +39,8 @@ const createNewCommentTemplate = (comment) => {
 };
 
 export default class NewCommentView extends SmartView {
+  _data = {};
+
   constructor(data = BLANK_COMMENT) {
     super();
     this._data=data;
@@ -84,10 +86,18 @@ export default class NewCommentView extends SmartView {
   #commentSubmitHandler = (evt) => {
     if(isEnter(evt) && evt.ctrlKey) {
       evt.preventDefault();
-      this.updateData({
-        date: dayjs().format('YYYY/MM/DD HH:MM'),
-      }, true);
-      this._callback.commentSubmit(this._data);
+      const elementToCheck = this.element.querySelector('.film-details__comment-input');
+      if(this._data.emoji === '' || this._data.text === '') {
+        elementToCheck.setCustomValidity('Смайлик и текст комментария - обязательные поля');
+      } else {
+        elementToCheck.setCustomValidity('');
+        this.updateData({
+          date: dayjs().format('YYYY/MM/DD HH:MM'),
+        }, true);
+        this._callback.commentSubmit(this._data);
+        document.removeEventListener('keydown', this.#commentSubmitHandler);
+      }
+      elementToCheck.reportValidity();
     }
   }
 }
