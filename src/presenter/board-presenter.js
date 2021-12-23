@@ -11,7 +11,7 @@ import {render, renderPosition, remove} from '../utils/render.js';
 import FilmPresenter from './film-presenter';
 import { updateItem } from '../utils/common';
 
-export default class BoardPresemter {
+export default class BoardPresenter {
 
   #boardContainer = null;
 

@@ -6,8 +6,9 @@ import NewCommentView from '../view/new-comment';
 import CommentsContainerView from '../view/comments-container';
 import CommentView from '../view/comment';
 import {isEscEvent} from '../utils/common';
-import { siteFooterElement } from '../main';
+import { comments, siteFooterElement } from '../main';
 import {render, renderPosition, remove, replace} from '../utils/render.js';
+import { nanoid } from 'nanoid';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -22,8 +23,10 @@ export default class FilmPresenter {
   #filmComponent = null;
   #popupComponent = null;
   #filmDetailsComponent = null;
+  _popUpBottomSectionComponent = null;
+  _newCommentComponent = null;
 
-  #film = null;
+  _film = null;
   #mode = Mode.DEFAULT;
 
   constructor(filmsListContainer, changeData, changeMode) {
@@ -33,15 +36,16 @@ export default class FilmPresenter {
   }
 
   init(film) {
-    this.#film = film;
+    this._film = film;
 
     const prevFilmComponent = this.#filmComponent;
     const prevPopupComponent = this.#popupComponent;
     const prevFilmDetailsComponent = this.#filmDetailsComponent;
 
-    this.#filmComponent = new FilmCardView(film);
+    this.#filmComponent = new FilmCardView(this._film);
     this.#popupComponent = new PopUpContainerView();
-    this.#filmDetailsComponent = new FilmDetailsView(this.#film);
+    this.#filmDetailsComponent = new FilmDetailsView(this._film);
+    this._popUpBottomSectionComponent = new PopUpBottomSectionView(this._film);
 
     this.#filmComponent.setFilmCardClickHandler(this.#handleFilmCardClick);
     this.#filmComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
@@ -86,17 +90,14 @@ export default class FilmPresenter {
     siteFooterElement.after(this.#popupComponent.element);
 
     const popupFormComponent = this.#popupComponent.element.querySelector('.film-details__inner');
-    const popUpBottomSectionComponent = new PopUpBottomSectionView(this.#film);
+    const popUpBottomSectionComponent = new PopUpBottomSectionView(this._film);
     const commentsContainerComponent = popUpBottomSectionComponent.element.querySelector('.film-details__comments-wrap');
-    const commentsListComponent = new CommentsContainerView();
+    this._newCommentComponent = new NewCommentView();
 
     render(popupFormComponent, this.#filmDetailsComponent, renderPosition.BEFOREEND);
     render(popupFormComponent, popUpBottomSectionComponent, renderPosition.BEFOREEND);
-    render(commentsContainerComponent, commentsListComponent, renderPosition.BEFOREEND);
-    for ( const commentId of this.#film.commentsIds) {
-      render(commentsListComponent, new CommentView(commentId), renderPosition.BEFOREEND);
-    }
-    render(commentsContainerComponent, new NewCommentView(), renderPosition.BEFOREEND);
+    this.#renderCommentsList(commentsContainerComponent);
+    render(commentsContainerComponent, this._newCommentComponent, renderPosition.BEFOREEND);
 
     document.addEventListener('keydown', this.#escKeyDownHandler);
     document.querySelector('body').classList.add('hide-overflow');
@@ -104,7 +105,18 @@ export default class FilmPresenter {
     this.#filmDetailsComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#filmDetailsComponent.setAlreadyWatchedClickHandler(this.#handleAlreadyWatchedClick);
     this.#filmDetailsComponent.setAddedToWatchlistClickHandler(this.#handleAddedToWatchlistClick);
+    this._newCommentComponent.setCommentSubmitHandler(this.createNewCommentHandler);
+  }
 
+  #renderCommentsList = (container) => {
+    const commentsListComponent = new CommentsContainerView();
+    render(container, commentsListComponent, renderPosition.BEFOREEND);
+
+    for ( const commentId of this._film.commentsIds) {
+      const commentComponent = new CommentView(commentId);
+      render(commentsListComponent, commentComponent, renderPosition.BEFOREEND);
+      commentComponent.setCommentDeleteHandler(this.deleteCommentHandler);
+    }
   }
 
   #replaceFilmToPopup = () => {
@@ -126,15 +138,32 @@ export default class FilmPresenter {
   }
 
   #handleFavoriteClick = () => {
-    this.#changeData({...this.#film, isFavorite: !this.#film.isFavorite});
+    this.#changeData({...this._film, isFavorite: !this._film.isFavorite});
   }
 
   #handleAlreadyWatchedClick = () => {
-    this.#changeData({...this.#film, isAlreadyWatched: !this.#film.isAlreadyWatched});
+    this.#changeData({...this._film, isAlreadyWatched: !this._film.isAlreadyWatched});
   }
 
   #handleAddedToWatchlistClick = () => {
-    this.#changeData({...this.#film, isAddedToWatchlist: !this.#film.isAddedToWatchlist});
+    this.#changeData({...this._film, isAddedToWatchlist: !this._film.isAddedToWatchlist});
+  }
+
+
+  createNewCommentHandler = (newComment) => {
+    newComment.id = nanoid();
+    this._film.commentsIds.push(newComment.id);
+    comments.push(newComment);
+
+    this.#changeData({...this._film});
+  }
+
+  deleteCommentHandler = (commentToDeleteId) => {
+    const commentIndex = this._film.commentsIds.findIndex((commentId) => commentId === commentToDeleteId);
+
+    this._film.commentsIds.splice(commentIndex,1);
+
+    this.#changeData({...this._film});
   }
 
   #handlePopupClose = (film) => {

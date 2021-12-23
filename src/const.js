@@ -40,3 +40,10 @@ export const FilterType = {
   ALREADY_WATCHED: 'history',
   FAVORITES: 'favorites',
 };
+
+export const BLANK_COMMENT = {
+  id: '',
+  emoji: '',
+  text: '',
+  date: '',
+};
