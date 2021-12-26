@@ -12,7 +12,7 @@ import FilmPresenter from './film-presenter';
 import { updateItem } from '../utils/common';
 import { sortFilmDateDown, sortFilmRatingDown } from '../utils/films';
 
-export default class BoardPresemter {
+export default class BoardPresenter {
 
   #boardContainer = null;
 

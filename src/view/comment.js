@@ -1,9 +1,7 @@
-import {generateComment} from '../mock/comments';
 import AbstractView from './abstract-view';
 
-const createCommentTemplate = (commentId) => {
-  const comment = generateComment(commentId);
-  const {emoji, text, author, date} =comment;
+const createCommentTemplate = (comment) => {
+  const {emoji, text, author, date} = comment;
 
   return `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
@@ -30,5 +28,20 @@ export default class CommentView extends AbstractView {
 
   get template() {
     return createCommentTemplate(this.#commentId);
+  }
+
+  setCommentDeleteHandler = (callback) => {
+    this._callback.deleteComment = callback;
+    if(this.element !== null){
+      this.element
+        .querySelector('.film-details__comment-delete')
+        .addEventListener('click', this.deleteCommentHandler);
+    }
+  }
+
+  deleteCommentHandler = (evt) => {
+    evt.preventDefault();
+    const commentToDeleteId = this.#commentId;
+    this._callback.deleteComment(commentToDeleteId);
   }
 }
