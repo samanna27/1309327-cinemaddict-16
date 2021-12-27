@@ -12,7 +12,8 @@ import FilmPresenter from './film-presenter';
 // import { updateItem } from '../utils/common';
 import { sortFilmDateDown, sortFilmRatingDown } from '../utils/films';
 
-export default class BoardPresemter {
+export default class BoardPresenter {
+
   #boardContainer = null;
   #filmsModel = null;
 
@@ -46,12 +47,12 @@ export default class BoardPresemter {
         return [...this.#filmsModel.films].sort(sortFilmDateDown);
       case SortType.RATING_DOWN:
         return [...this.#filmsModel.films].sort(sortFilmRatingDown);
-      }
+    }
 
     return this.#filmsModel.films;
   }
 
-  init = (boardFilms) => {
+  init = () => {
     render(this.#boardContainer, this.#boardComponent, renderPosition.BEFOREEND);
 
     this.#renderBoard();
@@ -126,13 +127,12 @@ export default class BoardPresemter {
 
   #renderNoFilmsMessage = () => {
     render(this.#boardComponent, this.#noFilmsMessageComponent, renderPosition.BEFOREEND);
-
   }
 
   #handleShowMoreButtonClick = () => {
     const filmsCount = this.films.length;
-    const newRenderedFilmsCount = Math.min(filmsCount, this.#renderedFilmsCount + TASK_COUNT_PER_STEP);
-    const films = this.films.slice(this.#renderedFilmsount, newRenderedFilmsCount);
+    const newRenderedFilmsCount = Math.min(filmsCount, this.#renderedFilmsCount + FILM_CARD_COUNT_PER_STEP);
+    const films = this.films.slice(this.#renderedFilmsCount, newRenderedFilmsCount);
 
     this.#renderFilms(films);
     this.#renderedFilmsCount = newRenderedFilmsCount;
@@ -150,14 +150,14 @@ export default class BoardPresemter {
     render(this.#boardComponent, this.#topFilmsSectionComponent, renderPosition.BEFOREEND);
     render(this.#topFilmsSectionComponent, this.#topFilmsContainerComponent, renderPosition.BEFOREEND);
 
-    this.#boardFilms.slice(0, TOP_COMMENTED_FILM_CARD_COUNT).forEach((film) => this.#renderFilm(film, this.#topFilmsContainerComponent));
+    this.films.slice(0, TOP_COMMENTED_FILM_CARD_COUNT).forEach((film) => this.#renderFilm(film, this.#topFilmsContainerComponent));
   }
 
   #renderCommentedFilms =() => {
     render(this.#boardComponent, this.#commentedFilmsSectionComponent, renderPosition.BEFOREEND);
     render(this.#commentedFilmsSectionComponent, this.#commentedFilmsContainerComponent, renderPosition.BEFOREEND);
 
-    this.#boardFilms.slice(0, TOP_COMMENTED_FILM_CARD_COUNT).forEach((film) => this.#renderFilm(film, this.#commentedFilmsContainerComponent));
+    this.films.slice(0, TOP_COMMENTED_FILM_CARD_COUNT).forEach((film) => this.#renderFilm(film, this.#commentedFilmsContainerComponent));
   }
 
   #renderBoard = () => {

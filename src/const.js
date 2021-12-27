@@ -41,6 +41,13 @@ export const FilterType = {
   FAVORITES: 'favorites',
 };
 
+export const BLANK_COMMENT = {
+  id: '',
+  emoji: '',
+  text: '',
+  date: '',
+};
+
 export const SortType = {
   DEFAULT: 'default',
   DATE_DOWN: 'date-down',

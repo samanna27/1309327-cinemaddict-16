@@ -10,9 +10,16 @@ import {generateFilm} from './mock/film';
 import {generateFilter} from './mock/filter';
 import BoardPresemter from './presenter/board-presenter.js';
 import MoviesModel from './model/movies-model.js';
+import {generateComment} from './mock/comments';
 
 const films = Array.from({length: FILM_CARD_MOCK_COUNT}, generateFilm);
+
 const filters = generateFilter(films);
+const commentsIds = [];
+films.forEach((film) => film.commentsIds.forEach((commentId) => commentsIds.push(commentId)));
+const comments = [];
+commentsIds.forEach((commentId) => comments.push(generateComment(commentId)));
+
 
 const moviesModel = new MoviesModel();
 moviesModel.films = films;
@@ -51,4 +58,4 @@ boardPresenter.init();
 
 render(siteFooterStatisticsElement, new FooterStatisticsView(films), renderPosition.BEFOREEND);
 
-export {siteFooterElement};
+export {siteFooterElement, comments};
