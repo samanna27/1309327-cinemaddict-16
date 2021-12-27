@@ -9,9 +9,13 @@ import {FILM_CARD_MOCK_COUNT, FilterType} from './const';
 import {generateFilm} from './mock/film';
 import {generateFilter} from './mock/filter';
 import BoardPresemter from './presenter/board-presenter.js';
+import MoviesModel from './model/movies-model.js';
 
 const films = Array.from({length: FILM_CARD_MOCK_COUNT}, generateFilm);
 const filters = generateFilter(films);
+
+const moviesModel = new MoviesModel();
+moviesModel.films = films;
 
 const siteHeaderElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
@@ -20,7 +24,7 @@ const siteFooterStatisticsElement = document.querySelector('.footer__statistics'
 
 const menuComponent = new MenuContainerView();
 const menuFiltersComponent = new MenuFiltersView(filters);
-const boardPresenter = new BoardPresemter(siteMainElement);
+const boardPresenter = new BoardPresemter(siteMainElement, moviesModel);
 
 render(siteHeaderElement, new UserProfileView(), renderPosition.BEFOREEND);
 render(siteMainElement, menuComponent, renderPosition.BEFOREEND);
@@ -43,7 +47,7 @@ menuFiltersComponent.setFilterClickHandler(filterChangeHandler);
 
 render(menuComponent, new MenuStatisticsView(), renderPosition.BEFOREEND);
 
-boardPresenter.init(films);
+boardPresenter.init();
 
 render(siteFooterStatisticsElement, new FooterStatisticsView(films), renderPosition.BEFOREEND);
 
