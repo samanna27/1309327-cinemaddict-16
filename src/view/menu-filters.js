@@ -2,7 +2,6 @@ import AbstractView from './abstract-view';
 
 const createFilterItemTemplate = (filter, currentFilterType) => {
   const {type, name, count} = filter;
-  // console.log(currentFilterType, type);
 
   return (
     `<a href="#${name.toString()[0].toLowerCase()+name.toString().slice(1)}"
