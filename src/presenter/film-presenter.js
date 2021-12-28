@@ -6,9 +6,11 @@ import NewCommentView from '../view/new-comment';
 import CommentsContainerView from '../view/comments-container';
 import CommentView from '../view/comment';
 import {isEscEvent} from '../utils/common';
-import { comments, siteFooterElement } from '../main';
+// import { comments, siteFooterElement } from '../main';
+import {siteFooterElement} from '../main';
 import {render, renderPosition, remove, replace} from '../utils/render.js';
 import { nanoid } from 'nanoid';
+import { UserAction, UpdateType } from '../const';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -27,6 +29,7 @@ export default class FilmPresenter {
   _newCommentComponent = null;
 
   _film = null;
+  _comments = null;
   #mode = Mode.DEFAULT;
 
   constructor(filmsListContainer, changeData, changeMode) {
@@ -35,8 +38,9 @@ export default class FilmPresenter {
     this.#changeMode = changeMode;
   }
 
-  init(film) {
+  init(film, filmComments) {
     this._film = film;
+    this._comments = filmComments;
 
     const prevFilmComponent = this.#filmComponent;
     const prevPopupComponent = this.#popupComponent;
@@ -120,7 +124,8 @@ export default class FilmPresenter {
         }
         return false;
       };
-      const comment = comments.find(requiredComment);
+      console.log(this._film.commentsIds, requiredComment, this._comments.comments);
+      const comment = this._comments.comments.find(requiredComment);
       const commentComponent = new CommentView(comment);
 
       render(commentsListComponent, commentComponent, renderPosition.BEFOREEND);
@@ -147,22 +152,31 @@ export default class FilmPresenter {
   }
 
   #handleFavoriteClick = () => {
-    this.#changeData({...this._film, isFavorite: !this._film.isFavorite});
+    this.#changeData(
+      UserAction.UPDATE_FILMS,
+      UpdateType.MINOR,
+      {...this._film, isFavorite: !this._film.isFavorite});
   }
 
   #handleAlreadyWatchedClick = () => {
-    this.#changeData({...this._film, isAlreadyWatched: !this._film.isAlreadyWatched});
+    this.#changeData(
+      UserAction.UPDATE_FILMS,
+      UpdateType.MINOR,
+      {...this._film, isAlreadyWatched: !this._film.isAlreadyWatched});
   }
 
   #handleAddedToWatchlistClick = () => {
-    this.#changeData({...this._film, isAddedToWatchlist: !this._film.isAddedToWatchlist});
+    this.#changeData(
+      UserAction.UPDATE_FILMS,
+      UpdateType.MINOR,
+      {...this._film, isAddedToWatchlist: !this._film.isAddedToWatchlist});
   }
 
 
   createNewCommentHandler = (newComment) => {
     newComment.id = nanoid();
     this._film.commentsIds.push(newComment.id);
-    comments.push(newComment);
+    this._comments.push(newComment);
 
     this.#changeData({...this._film});
   }
@@ -176,6 +190,7 @@ export default class FilmPresenter {
   }
 
   #handlePopupClose = (film) => {
+    //to do: do we need update film here? try to exclude next line. all changes are managed by other handlers
     this.#changeData(film);
     this.#replacePopupToFilm();
   }
