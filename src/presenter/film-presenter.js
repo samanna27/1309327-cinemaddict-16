@@ -6,7 +6,6 @@ import NewCommentView from '../view/new-comment';
 import CommentsContainerView from '../view/comments-container';
 import CommentView from '../view/comment';
 import {isEscEvent} from '../utils/common';
-// import { comments, siteFooterElement } from '../main';
 import {siteFooterElement} from '../main';
 import {render, renderPosition, remove, replace} from '../utils/render.js';
 import { nanoid } from 'nanoid';
@@ -153,7 +152,6 @@ export default class FilmPresenter {
   #handleFavoriteClick = () => {
     this.#changeData(
       UserAction.UPDATE_FILM,
-      // (this.#mode === Mode.POPUP ? UpdateType.PATCH : UpdateType.MINOR),
       UpdateType.PATCH,
       {...this.#film, isFavorite: !this.#film.isFavorite},
     );
@@ -162,7 +160,6 @@ export default class FilmPresenter {
   #handleAlreadyWatchedClick = () => {
     this.#changeData(
       UserAction.UPDATE_FILM,
-      // (this.#mode === Mode.POPUP ? UpdateType.PATCH : UpdateType.MINOR),
       UpdateType.PATCH,
       {...this.#film, isAlreadyWatched: !this.#film.isAlreadyWatched});
   }
@@ -170,7 +167,6 @@ export default class FilmPresenter {
   #handleAddedToWatchlistClick = () => {
     this.#changeData(
       UserAction.UPDATE_FILM,
-      // (this.#mode === Mode.POPUP ? UpdateType.PATCH : UpdateType.MINOR),
       UpdateType.PATCH,
       {...this.#film, isAddedToWatchlist: !this.#film.isAddedToWatchlist});
   }
@@ -200,9 +196,7 @@ export default class FilmPresenter {
     );
   }
 
-  #handlePopupClose = (film) => {
-    //to do: do we need update film here? try to exclude next line. all changes are managed by other handlers
-    this.#changeData(film);
+  #handlePopupClose = () => {
     this.#replacePopupToFilm();
   }
 

@@ -9,7 +9,6 @@ import CommentedFilmsSectionView from '../view/commented-films-section';
 import {FILM_CARD_COUNT_PER_STEP, TOP_COMMENTED_FILM_CARD_COUNT, SortType, UpdateType, UserAction, FilterType} from '../const';
 import {render, renderPosition, remove} from '../utils/render.js';
 import FilmPresenter from './film-presenter';
-// import { updateItem } from '../utils/common';
 import { sortFilmDateDown, sortFilmRatingDown } from '../utils/films';
 import { filters } from '../utils/filter';
 
@@ -32,13 +31,11 @@ export default class BoardPresenter {
   #commentedFilmsSectionComponent = new CommentedFilmsSectionView();
   #filterType = FilterType.ALL;
 
-  // #boardFilms = [];
   #renderedFilmsCount = FILM_CARD_COUNT_PER_STEP;
   #allFilmPresenter = new Map();
   #topFilmPresenter = new Map();
   #commentedFilmPresenter = new Map();
   #currentSortType = SortType.DEFAULT;
-  // #sourceBoardFilms = [];
 
   constructor(boardContainer, moviesModel, commentsModel, filterModel) {
     this.#boardContainer = boardContainer;
@@ -132,7 +129,6 @@ export default class BoardPresenter {
   }
 
   #renderFilm = (film, container) => {
-    // const filmPresenter = new FilmPresenter(container, this.#handleFilmChange, this.#handleModeChange, this.#commentsModel);
     const filmPresenter = new FilmPresenter(container, this.#handleViewAction, this.#handleModeChange, this.#commentsModel);
 
     filmPresenter.init(film, this.#commentsModel);
@@ -187,7 +183,6 @@ export default class BoardPresenter {
   }
 
   #clearBoard = ({resetRenderedFilmsCount = false, resetSortType = false} = {}) => {
-    // const filmCount = this.films.length;
 
     this.#allFilmPresenter.forEach((presenter) => presenter.destroy());
     this.#allFilmPresenter.clear();
