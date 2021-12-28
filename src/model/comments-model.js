@@ -13,18 +13,18 @@ export default class CommentsModel extends AbstractObservable {
 
   addComment = (updateType, update) => {
     this.#comments = [
-      update,
+      update.newComment,
       ...this.#comments,
     ];
 
     this._notify(updateType, update);
   }
 
-  deleteTask = (updateType, update) => {
-    const index = this.#comments.findIndex((comment) => comment.id === update.id);
+  deleteComment = (updateType, update) => {
+    const index = this.#comments.findIndex((comment) => comment.id === update.commentToDelete.id);
 
     if (index === -1) {
-      throw new Error('Can\'t delete unexisting task');
+      throw new Error('Can\'t delete unexisting comment');
     }
 
     this.#comments = [
@@ -32,6 +32,6 @@ export default class CommentsModel extends AbstractObservable {
       ...this.#comments.slice(index + 1),
     ];
 
-    this._notify(updateType);
+    this._notify(updateType, update);
   }
 }

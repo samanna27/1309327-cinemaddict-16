@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import { BLANK_COMMENT } from '../const';
 import SmartView from './smart-view';
 import { isEnter } from '../utils/common';
+import he from 'he';
 
 const createNewCommentTemplate = (comment) => {
   const {emoji, text} = comment;
@@ -11,7 +12,7 @@ const createNewCommentTemplate = (comment) => {
     <div class="film-details__add-emoji-label">${emoji === ''? '' : emojiTemplate}</div>
 
     <label class="film-details__comment-label">
-      <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${text}</textarea>
+      <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${he.encode(text)}</textarea>
     </label>
 
     <div class="film-details__emoji-list">

@@ -19,15 +19,15 @@ const createCommentTemplate = (comment) => {
 };
 
 export default class CommentView extends AbstractView {
-  #commentId = null;
+  #comment = null;
 
-  constructor(commentId = '') {
+  constructor(comment = '') {
     super();
-    this.#commentId=commentId;
+    this.#comment=comment;
   }
 
   get template() {
-    return createCommentTemplate(this.#commentId);
+    return createCommentTemplate(this.#comment);
   }
 
   setCommentDeleteHandler = (callback) => {
@@ -41,7 +41,7 @@ export default class CommentView extends AbstractView {
 
   deleteCommentHandler = (evt) => {
     evt.preventDefault();
-    const commentToDeleteId = this.#commentId;
-    this._callback.deleteComment(commentToDeleteId);
+    const commentToDelete = this.#comment;
+    this._callback.deleteComment(commentToDelete);
   }
 }
