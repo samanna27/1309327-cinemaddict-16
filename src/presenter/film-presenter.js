@@ -6,9 +6,10 @@ import NewCommentView from '../view/new-comment';
 import CommentsContainerView from '../view/comments-container';
 import CommentView from '../view/comment';
 import {isEscEvent} from '../utils/common';
-import { comments, siteFooterElement } from '../main';
+import {siteFooterElement} from '../main';
 import {render, renderPosition, remove, replace} from '../utils/render.js';
 import { nanoid } from 'nanoid';
+import { UserAction, UpdateType } from '../const';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -26,7 +27,8 @@ export default class FilmPresenter {
   _popUpBottomSectionComponent = null;
   _newCommentComponent = null;
 
-  _film = null;
+  #film = null;
+  #comments = null;
   #mode = Mode.DEFAULT;
 
   constructor(filmsListContainer, changeData, changeMode) {
@@ -35,17 +37,18 @@ export default class FilmPresenter {
     this.#changeMode = changeMode;
   }
 
-  init(film) {
-    this._film = film;
+  init(film, filmComments) {
+    this.#film = film;
+    this.#comments = filmComments;
 
     const prevFilmComponent = this.#filmComponent;
     const prevPopupComponent = this.#popupComponent;
     const prevFilmDetailsComponent = this.#filmDetailsComponent;
 
-    this.#filmComponent = new FilmCardView(this._film);
+    this.#filmComponent = new FilmCardView(this.#film);
     this.#popupComponent = new PopUpContainerView();
-    this.#filmDetailsComponent = new FilmDetailsView(this._film);
-    this._popUpBottomSectionComponent = new PopUpBottomSectionView(this._film);
+    this.#filmDetailsComponent = new FilmDetailsView(this.#film);
+    this._popUpBottomSectionComponent = new PopUpBottomSectionView(this.#film);
 
     this.#filmComponent.setFilmCardClickHandler(this.#handleFilmCardClick);
     this.#filmComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
@@ -90,7 +93,7 @@ export default class FilmPresenter {
     siteFooterElement.after(this.#popupComponent.element);
 
     const popupFormComponent = this.#popupComponent.element.querySelector('.film-details__inner');
-    const popUpBottomSectionComponent = new PopUpBottomSectionView(this._film);
+    const popUpBottomSectionComponent = new PopUpBottomSectionView(this.#film);
     const commentsContainerComponent = popUpBottomSectionComponent.element.querySelector('.film-details__comments-wrap');
     this._newCommentComponent = new NewCommentView();
 
@@ -113,14 +116,14 @@ export default class FilmPresenter {
 
     render(container, commentsListComponent, renderPosition.BEFOREEND);
 
-    for ( const commentId of this._film.commentsIds) {
+    for ( const commentId of this.#film.commentsIds) {
       const requiredComment = (element) => {
         if(element.id === commentId) {
           return element;
         }
         return false;
       };
-      const comment = comments.find(requiredComment);
+      const comment = this.#comments.comments.find(requiredComment);
       const commentComponent = new CommentView(comment);
 
       render(commentsListComponent, commentComponent, renderPosition.BEFOREEND);
@@ -147,36 +150,53 @@ export default class FilmPresenter {
   }
 
   #handleFavoriteClick = () => {
-    this.#changeData({...this._film, isFavorite: !this._film.isFavorite});
+    this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.PATCH,
+      {...this.#film, isFavorite: !this.#film.isFavorite},
+    );
   }
 
   #handleAlreadyWatchedClick = () => {
-    this.#changeData({...this._film, isAlreadyWatched: !this._film.isAlreadyWatched});
+    this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.PATCH,
+      {...this.#film, isAlreadyWatched: !this.#film.isAlreadyWatched});
   }
 
   #handleAddedToWatchlistClick = () => {
-    this.#changeData({...this._film, isAddedToWatchlist: !this._film.isAddedToWatchlist});
+    this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.PATCH,
+      {...this.#film, isAddedToWatchlist: !this.#film.isAddedToWatchlist});
   }
 
 
   createNewCommentHandler = (newComment) => {
     newComment.id = nanoid();
-    this._film.commentsIds.push(newComment.id);
-    comments.push(newComment);
+    this.#film.commentsIds.push(newComment.id);
+    this.#comments.comments.push(newComment);
 
-    this.#changeData({...this._film});
+    this.#changeData(
+      UserAction.ADD_COMMENT,
+      UpdateType.PATCH,
+      {...this.#film, newComment},
+    );
   }
 
-  deleteCommentHandler = (commentToDeleteId) => {
-    const commentIndex = this._film.commentsIds.findIndex((commentId) => commentId === commentToDeleteId);
+  deleteCommentHandler = (commentToDelete) => {
+    const commentIndex = this.#film.commentsIds.findIndex((commentId) => commentId === commentToDelete.id);
 
-    this._film.commentsIds.splice(commentIndex,1);
+    this.#film.commentsIds.splice(commentIndex,1);
 
-    this.#changeData({...this._film});
+    this.#changeData(
+      UserAction.DELETE_COMMENT,
+      UpdateType.PATCH,
+      {...this.#film, commentToDelete},
+    );
   }
 
-  #handlePopupClose = (film) => {
-    this.#changeData(film);
+  #handlePopupClose = () => {
     this.#replacePopupToFilm();
   }
 
