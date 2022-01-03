@@ -1,9 +1,9 @@
-import {render, renderPosition} from './utils/render.js';
+import {remove, render, renderPosition} from './utils/render.js';
 import UserProfileView from './view/user-profile';
 import MenuContainerView from './view/menu-container';
-import MenuStatisticsView from './view/menu-statistics';
 import FooterStatisticsView from './view/footer-statistics';
-import {FILM_CARD_MOCK_COUNT} from './const';
+import StatisticsView from './view/statistics-view';
+import {FILM_CARD_MOCK_COUNT, FilterType} from './const';
 import {generateFilm} from './mock/film';
 import BoardPresemter from './presenter/board-presenter.js';
 import FilterPresenter from './presenter/filter-presenter.js';
@@ -11,6 +11,7 @@ import MoviesModel from './model/movies-model.js';
 import CommentsModel from './model/comments-model.js';
 import FilterModel from './model/filter-model.js';
 import {generateComment} from './mock/comments';
+import { periodFilterTypes } from './utils/statistics.js';
 
 const films = Array.from({length: FILM_CARD_MOCK_COUNT}, generateFilm);
 
@@ -34,6 +35,7 @@ const siteFooterElement = document.querySelector('.footer');
 const siteFooterStatisticsElement = document.querySelector('.footer__statistics');
 
 const menuComponent = new MenuContainerView();
+let statisticsComponent = null;
 
 const boardPresenter = new BoardPresemter(siteMainElement, moviesModel, commentsModel, filterModel);
 
@@ -43,11 +45,24 @@ render(siteMainElement, menuComponent, renderPosition.BEFOREEND);
 const filterPresenter = new FilterPresenter(menuComponent, filterModel, moviesModel);
 
 filterPresenter.init();
-
-render(menuComponent, new MenuStatisticsView(), renderPosition.BEFOREEND);
-
 boardPresenter.init();
+
+const switchScreen = (filterType) => {
+  switch(filterType) {
+    case FilterType.STATS:
+      boardPresenter.destroy();
+      statisticsComponent = new StatisticsView(moviesModel.films, periodFilterTypes[0].name);
+      render(siteMainElement, statisticsComponent, renderPosition.BEFOREEND);
+      break;
+    default:
+      remove(statisticsComponent);
+      boardPresenter.destroy();
+      boardPresenter.init();
+      break;
+  }
+
+};
 
 render(siteFooterStatisticsElement, new FooterStatisticsView(films), renderPosition.BEFOREEND);
 
-export {siteFooterElement, comments};
+export {siteFooterElement, comments, switchScreen};

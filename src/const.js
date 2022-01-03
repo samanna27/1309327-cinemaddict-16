@@ -39,6 +39,7 @@ export const FilterType = {
   ADDED_TO_WATCHLIST: 'toWatchlist',
   ALREADY_WATCHED: 'history',
   FAVORITES: 'favorites',
+  STATS: 'stats',
 };
 
 export const BLANK_COMMENT = {

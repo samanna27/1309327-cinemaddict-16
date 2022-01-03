@@ -2,6 +2,8 @@ import MenuFiltersView from '../view/menu-filters.js';
 import {render, renderPosition, replace, remove} from '../utils/render.js';
 import {filters} from '../utils/filter.js';
 import {FilterType, UpdateType} from '../const.js';
+import MenuStatisticsView from '../view/menu-statistics';
+import { switchScreen } from '../main.js';
 
 export default class FilterPresenter {
   #filterContainer = null;
@@ -9,14 +11,12 @@ export default class FilterPresenter {
   #filmsModel = null;
 
   #filterComponent = null;
+  #statsComponent = null;
 
   constructor(filterContainer, filterModel, filmsModel) {
     this.#filterContainer = filterContainer;
     this.#filterModel = filterModel;
     this.#filmsModel = filmsModel;
-
-    this.#filmsModel.addObserver(this.#handleModelEvent);
-    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get filters() {
@@ -43,23 +43,38 @@ export default class FilterPresenter {
         name: 'Favorites',
         count: filters[FilterType.FAVORITES](films).length,
       },
+      {
+        type: FilterType.STATS,
+        name: 'Stats',
+        count: filters[FilterType.STATS](films).length,
+      },
     ];
   }
 
   init = () => {
     const filmsFilters = this.filters;
     const prevFilterComponent = this.#filterComponent;
+    const prevStatsComponent = this.#statsComponent;
 
     this.#filterComponent = new MenuFiltersView(filmsFilters, this.#filterModel.filter);
     this.#filterComponent.setFilterClickHandler(this.#handleFilterTypeChange);
 
+    this.#statsComponent = new MenuStatisticsView(filmsFilters, this.#filterModel.filter);
+    this.#statsComponent.setStatScreenCkickHandler(this.#handleFilterTypeChange);
+
+    this.#filmsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
+
     if (prevFilterComponent === null) {
       render(this.#filterContainer, this.#filterComponent, renderPosition.BEFOREEND);
+      render(this.#filterContainer, this.#statsComponent, renderPosition.BEFOREEND);
       return;
     }
 
     replace(this.#filterComponent, prevFilterComponent);
+    replace(this.#statsComponent, prevStatsComponent);
     remove(prevFilterComponent);
+    remove(prevStatsComponent);
   }
 
   #handleModelEvent = () => {
@@ -72,5 +87,6 @@ export default class FilterPresenter {
     }
 
     this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
+    switchScreen(filterType);
   }
 }

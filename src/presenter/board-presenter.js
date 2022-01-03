@@ -42,10 +42,6 @@ export default class BoardPresenter {
     this.#filmsModel = moviesModel;
     this.#commentsModel = commentsModel;
     this.#filterModel = filterModel;
-
-    this.#filmsModel.addObserver(this.#handleModelEvent);
-    this.#commentsModel.addObserver(this.#handleModelEvent);
-    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get films() {
@@ -66,7 +62,25 @@ export default class BoardPresenter {
   init = () => {
     render(this.#boardContainer, this.#boardComponent, renderPosition.BEFOREEND);
 
+    this.#filmsModel.addObserver(this.#handleModelEvent);
+    this.#commentsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
+
     this.#renderBoard();
+  }
+
+  destroy = () => {
+    this.#clearBoard({resetRenderedFilmsCount: true, resetSortType: true});
+
+    remove(this.#sortFilmsComponent);
+    remove(this.#allFilmsSectionComponent);
+    remove(this.#topFilmsSectionComponent);
+    remove(this.#commentedFilmsSectionComponent);
+    remove(this.#boardComponent);
+
+    this.#filmsModel.deleteObserver(this.#handleModelEvent);
+    this.#commentsModel.deleteObserver(this.#handleModelEvent);
+    this.#filterModel.deleteObserver(this.#handleModelEvent);
   }
 
   #handleModeChange = () => {
@@ -192,7 +206,7 @@ export default class BoardPresenter {
     this.#commentedFilmPresenter.clear();
 
     remove(this.#sortFilmsComponent);
-    remove(this.#noFilmsMessageComponent);
+    // remove(this.#noFilmsMessageComponent);
     remove(this.#showMoreButtonComponent);
     remove(this.#topFilmsSectionComponent);
     remove(this.#commentedFilmsSectionComponent);
