@@ -15,7 +15,7 @@ const createFilterItemTemplate = (filter, currentFilterType) => {
 
 const createMenuFiltersTemplate = (filters, currentFilterType) => {
   const {type, name, count} = filters[0];
-  const filterItemsTemplate = filters.map((filter) => createFilterItemTemplate(filter, currentFilterType)).slice(1).join('');
+  const filterItemsTemplate = filters.slice(0,-1).map((filter) => createFilterItemTemplate(filter, currentFilterType)).slice(1).join('');
 
   return (
     `<div class="main-navigation__items">
