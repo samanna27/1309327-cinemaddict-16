@@ -1,14 +1,42 @@
 import AbstractObservable from '../utils/abstract-observable';
+import { UpdateType } from '../const';
+import dayjs from 'dayjs';
 
 export default class CommentsModel extends AbstractObservable {
+  #apiService = null;
   #comments = [];
 
-  set comments(comments) {
-    this.#comments = [...comments];
+  constructor(apiService) {
+    super();
+    this.#apiService = apiService;
   }
 
   get comments() {
     return this.#comments;
+  }
+
+  init = async (film) => {
+    try {
+      const comments = await this.#apiService.getFilmComments(film);
+      this.#comments = comments.map(this.#adaptToClient);
+    } catch(err) {
+      this.#comments = [];
+    }
+
+    this._notify(UpdateType.INIT_COMMENTS, film);
+  }
+
+  #adaptToClient = (comment) => {
+    const adaptedComment = {...comment,
+      emoji: `./images/emoji/${comment.emotion}.png`,
+      date: dayjs(comment.date).format('YYYY/MM/DD HH:MM'),
+      text: comment.comment,
+    };
+
+    delete adaptedComment['emotion'];
+    delete adaptedComment['comment'];
+
+    return adaptedComment;
   }
 
   addComment = (updateType, update) => {

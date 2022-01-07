@@ -1,5 +1,7 @@
 import AbstractView from './abstract-view';
 import {BLANK_FILM} from '../const';
+import dayjs from 'dayjs';
+import { transferMinutesToDurationString } from '../utils/common.js';
 
 const createFilmDetailsTemplate = (film) => {
   const {poster, title, originalTitle, ageConstraint, rating, director, actors, writers, releaseDate, duration, country, genre, description, isAddedToWatchlist, isAlreadyWatched, isFavorite} = film;
@@ -34,19 +36,19 @@ const createFilmDetailsTemplate = (film) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Writers</td>
-              <td class="film-details__cell">${writers}</td>
+              <td class="film-details__cell">${writers.join(', ')}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Actors</td>
-              <td class="film-details__cell">${actors}</td>
+              <td class="film-details__cell">${actors.join(', ')}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${releaseDate}</td>
+              <td class="film-details__cell">${dayjs(releaseDate).format('D MMMM YYYY')}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${duration}</td>
+              <td class="film-details__cell">${transferMinutesToDurationString(duration)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>

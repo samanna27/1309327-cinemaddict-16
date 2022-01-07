@@ -3,11 +3,7 @@ const countAccumulatedDurationFilmsWatched = (films) => {
   const filmsWatched = films.filter((film) => (film.isAlreadyWatched === true));
   let accumulatedDuration = 0;
   for(const film of filmsWatched) {
-    const hourIndex = film.duration.indexOf('h', 0);
-    const minIndex = film.duration.indexOf('m', 0);
-    const hoursInFilm = film.duration.slice(0, hourIndex);
-    const minInFilm = film.duration.slice(hourIndex+2, minIndex);
-    accumulatedDuration += (hoursInFilm * 60 + minInFilm*1);
+    accumulatedDuration += film.duration;
   }
   const hours = Math.floor(accumulatedDuration / 60, 0);
   const min = accumulatedDuration % 60;
@@ -42,12 +38,21 @@ const getTopGenre = (films) => {
   const genres = getUniqueGenresList(films);
   const filmsByGenre = getFilmsByGenre(films);
   const topGenreFilmsNumber = Math.max(...filmsByGenre);
-  const isTopGenreIndex = (element) => element === topGenreFilmsNumber;
 
-  const topGenreIndex = filmsByGenre.findIndex(isTopGenreIndex);
-  const topGenre = [...genres][topGenreIndex];
+  const genresFilmsPairs = [];
+  let count = 0;
+  for(const genre of genres) {
+    genresFilmsPairs.push({name: genre, count: filmsByGenre[count]});
+    count ++;
+  }
+  const topGenre = [];
+  for(const pair of genresFilmsPairs) {
+    if(pair.count === topGenreFilmsNumber) {
+      topGenre.push(pair.name);
+    }
+  }
 
-  return topGenre;
+  return [...topGenre];
 };
 
 const periodFilterTypes = [{

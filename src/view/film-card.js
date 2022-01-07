@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import {formatDescription} from '../utils/common';
 import AbstractView from './abstract-view';
 import {BLANK_FILM} from '../const';
+import { transferMinutesToDurationString } from '../utils/common.js';
 
 const createFilmCardTemplate = (film) => {
   const {title, rating, releaseDate, duration, genre, poster, description, commentsIds, isAddedToWatchlist, isAlreadyWatched, isFavorite} = film;
@@ -12,8 +13,8 @@ const createFilmCardTemplate = (film) => {
       <p class="film-card__rating">${rating}</p>
       <p class="film-card__info">
         <span class="film-card__year">${dayjs(releaseDate).format('YYYY')}</span>
-        <span class="film-card__duration">${duration}</span>
-        <span class="film-card__genre">${genre}</span>
+        <span class="film-card__duration">${transferMinutesToDurationString(duration)}</span>
+        <span class="film-card__genre">${genre.join(' ')}</span>
       </p>
       <img src=${poster} alt="" class="film-card__poster">
       <p class="film-card__description">${formatDescription(description)}</p>
