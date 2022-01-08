@@ -38,3 +38,32 @@ export const sortFilmRatingDown = (filmA, filmB) => {
 
 export const isDatesEqual = (dateA, dateB) =>
   (dateA === null && dateB === null) ? true : dayjs(dateA).isSame(dateB, 'D');
+
+export const adaptToClient = (film) => {
+  const adaptedFilm = {...film,
+    'title': film.film_info.title,
+    'originalTitle': film.film_info.alternative_title,
+    'poster': film.film_info.poster,
+    'ageConstraint': film.film_info.age_rating,
+    'description': film.film_info.description,
+    'rating': film.film_info.total_rating,
+    'director': film.film_info.director,
+    'actors': [...film.film_info.actors],
+    'writers': [...film.film_info.writers],
+    'releaseDate': film.film_info.release.date,
+    'duration': film.film_info.runtime,
+    'country': film.film_info.release.release_country,
+    'genre': [...film.film_info.genre],
+    'commentsIds': film.comments,
+    'isAddedToWatchlist': film.user_details.watchlist,
+    'isAlreadyWatched': film.user_details.already_watched,
+    'isFavorite': film.user_details.favorite,
+    'watchedDate': film.user_details.watching_date,
+  };
+
+  delete adaptedFilm['film_info'];
+  delete adaptedFilm['comments'];
+  delete adaptedFilm['user_details'];
+
+  return adaptedFilm;
+};

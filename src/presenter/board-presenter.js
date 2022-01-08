@@ -9,7 +9,7 @@ import TopFilmsSectionView from '../view/top-films-section';
 import CommentedFilmsSectionView from '../view/commented-films-section';
 import {FILM_CARD_COUNT_PER_STEP, TOP_COMMENTED_FILM_CARD_COUNT, SortType, UpdateType, UserAction, FilterType} from '../const';
 import {render, renderPosition, remove} from '../utils/render.js';
-import FilmPresenter from './film-presenter';
+import FilmPresenter, {State as FilmPresenterViewState} from './film-presenter';
 import { sortFilmDateDown, sortFilmRatingDown } from '../utils/films';
 import { filters } from '../utils/filter';
 import { renderFooterStatistic } from '../main';
@@ -93,18 +93,41 @@ export default class BoardPresenter {
     this.#commentedFilmPresenter.forEach((presenter) => presenter.resetView());
   }
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_FILM:
         this.#filmsModel.updateFilm(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
-        this.#commentsModel.addComment(updateType, update);
-        this.#filmsModel.updateFilm(updateType, update);
+        // this.#taskNewPresenter.setSaving();
+        if(this.#allFilmPresenter.has(update.id)) {
+          this.#allFilmPresenter.get(update.id).setSaving();}
+        if(this.#topFilmPresenter.has(update.id)) {
+          this.#topFilmPresenter.get(update.id).setSaving();}
+        if(this.#commentedFilmPresenter.has(update.id)) {
+          this.#commentedFilmPresenter.get(update.id).setSaving();}
+        try {
+          await this.#commentsModel.addComment(updateType, update);
+          this.#filmsModel.updateFilm(updateType, update);
+        } catch(err) {
+          if(this.#allFilmPresenter.has(update.id)) {
+            this.#allFilmPresenter.get(update.id).setAborting(FilmPresenterViewState.ABORTING);}
+        }
         break;
       case UserAction.DELETE_COMMENT:
-        this.#commentsModel.deleteComment(updateType, update);
-        this.#filmsModel.updateFilm(updateType, update);
+        if(this.#allFilmPresenter.has(update.id)) {
+          this.#allFilmPresenter.get(update.id).setDeletion(update.element);}
+        if(this.#topFilmPresenter.has(update.id)) {
+          this.#topFilmPresenter.get(update.id).setDeletion();}
+        if(this.#commentedFilmPresenter.has(update.id)) {
+          this.#commentedFilmPresenter.get(update.id).setDeletion();}
+        try {
+          this.#commentsModel.deleteComment(updateType, update);
+          this.#filmsModel.updateFilm(updateType, update);
+        } catch (err) {
+          if(this.#allFilmPresenter.has(update.id)) {
+            this.#allFilmPresenter.get(update.id).setAborting(FilmPresenterViewState.ABORTING);}
+        }
         break;
     }
   }

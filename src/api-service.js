@@ -1,6 +1,8 @@
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
 };
 
 export default class ApiService {
@@ -38,6 +40,28 @@ export default class ApiService {
     const parsedResponse = await ApiService.parseResponse(response);
 
     return parsedResponse;
+  }
+
+  addComment = async (comment, film) => {
+    const response = await this.#load({
+      url: `comments/${film.id}`,
+      method: Method.POST,
+      body: JSON.stringify(this.#adaptCommentToServer(comment)),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+
+    const parsedResponse = await ApiService.parseResponse(response);
+
+    return parsedResponse;
+  }
+
+  deleteComment = async (comment) => {
+    const response = await this.#load({
+      url: `comments/${comment.id}`,
+      method: Method.DELETE,
+    });
+
+    return response;
   }
 
   #load = async ({
@@ -109,6 +133,20 @@ export default class ApiService {
     delete adaptedFilm.watchedDate;
 
     return adaptedFilm;
+  }
+
+  #adaptCommentToServer = (comment) => {
+    const adaptedComment = {...comment,
+      'comment': comment.text,
+      'emotion': comment.emoji,
+    };
+
+    delete adaptedComment.text;
+    delete adaptedComment.emoji;
+    delete adaptedComment.date;
+    delete adaptedComment.id;
+
+    return adaptedComment;
   }
 
   static parseResponse = (response) => response.json();

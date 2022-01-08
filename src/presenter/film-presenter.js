@@ -9,8 +9,12 @@ import LoadingView from '../view/loading-view';
 import {isEscEvent} from '../utils/common';
 import {siteFooterElement} from '../main';
 import {render, renderPosition, remove, replace} from '../utils/render.js';
-import { nanoid } from 'nanoid';
 import { UserAction, UpdateType } from '../const';
+
+export const State = {
+  DELETING: 'DELETING',
+  ABORTING: 'ABORTING',
+};
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -28,6 +32,7 @@ export default class FilmPresenter {
   _popUpBottomSectionComponent = null;
   _newCommentComponent = null;
   #loadingComponent = new LoadingView();
+  _commentComponent = null;
 
   #film = null;
   #comments = null;
@@ -131,10 +136,10 @@ export default class FilmPresenter {
         return;
       }
       const comment = this.#comments.comments.find(requiredComment);
-      const commentComponent = new CommentView(comment);
+      this._commentComponent = new CommentView(comment);
 
-      render(commentsListComponent, commentComponent, renderPosition.BEFOREEND);
-      commentComponent.setCommentDeleteHandler(this.deleteCommentHandler);
+      render(commentsListComponent, this._commentComponent, renderPosition.BEFOREEND);
+      this._commentComponent.setCommentDeleteHandler(this.deleteCommentHandler);
     }
   }
 
@@ -191,11 +196,43 @@ export default class FilmPresenter {
       {...this.#film, isAddedToWatchlist: !this.#film.isAddedToWatchlist});
   }
 
+  setSaving = () => {
+    this._newCommentComponent.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setDeletion = (element) => {
+    this._commentComponent.updateData({
+      isDisabled: true,
+      isDeleting: true,
+      element,
+    });
+  }
+
+  setAborting = () => {
+    const resetFormState = () => {
+      this._newCommentComponent.updateData({
+        isDisabled: false,
+      });
+      this._newCommentComponent.setCommentSubmitHandler(this.createNewCommentHandler);
+    };
+
+    this._newCommentComponent.shake(resetFormState);
+  }
+
+  setCommentToDeleteAborting = () => {
+    const resetFormState = () => {
+      this._commentComponent.updateData({
+        isDisabled: false,
+      });
+    };
+
+    this._commentComponent.shake(resetFormState);
+  }
 
   createNewCommentHandler = (newComment) => {
-    newComment.id = nanoid();
-    this.#film.commentsIds.push(newComment.id);
-    this.#comments.comments.push(newComment);
 
     this.#changeData(
       UserAction.ADD_COMMENT,

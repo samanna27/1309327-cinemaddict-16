@@ -13,7 +13,6 @@ export default class SmartView extends AbstractView {
     if(justDataUpdating) {
       return;
     }
-
     this.updateElement();
   }
 
