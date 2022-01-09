@@ -99,7 +99,6 @@ export default class BoardPresenter {
         this.#filmsModel.updateFilm(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
-        // this.#taskNewPresenter.setSaving();
         if(this.#allFilmPresenter.has(update.id)) {
           this.#allFilmPresenter.get(update.id).setSaving();}
         if(this.#topFilmPresenter.has(update.id)) {
@@ -112,21 +111,29 @@ export default class BoardPresenter {
         } catch(err) {
           if(this.#allFilmPresenter.has(update.id)) {
             this.#allFilmPresenter.get(update.id).setAborting(FilmPresenterViewState.ABORTING);}
+          if(this.#topFilmPresenter.has(update.id)) {
+            this.#topFilmPresenter.get(update.id).setAborting(FilmPresenterViewState.ABORTING);}
+          if(this.#commentedFilmPresenter.has(update.id)) {
+            this.#commentedFilmPresenter.get(update.id).setAborting(FilmPresenterViewState.ABORTING);}
         }
         break;
       case UserAction.DELETE_COMMENT:
         if(this.#allFilmPresenter.has(update.id)) {
-          this.#allFilmPresenter.get(update.id).setDeletion(update.element);}
+          this.#allFilmPresenter.get(update.id).setDeletion(update);}
         if(this.#topFilmPresenter.has(update.id)) {
           this.#topFilmPresenter.get(update.id).setDeletion();}
         if(this.#commentedFilmPresenter.has(update.id)) {
           this.#commentedFilmPresenter.get(update.id).setDeletion();}
         try {
-          this.#commentsModel.deleteComment(updateType, update);
+          await this.#commentsModel.deleteComment(updateType, update);
           this.#filmsModel.updateFilm(updateType, update);
         } catch (err) {
           if(this.#allFilmPresenter.has(update.id)) {
-            this.#allFilmPresenter.get(update.id).setAborting(FilmPresenterViewState.ABORTING);}
+            this.#allFilmPresenter.get(update.id).setCommentToDeleteAborting(FilmPresenterViewState.ABORTING);}
+          if(this.#topFilmPresenter.has(update.id)) {
+            this.#topFilmPresenter.get(update.id).setCommentToDeleteAborting(FilmPresenterViewState.ABORTING);}
+          if(this.#commentedFilmPresenter.has(update.id)) {
+            this.#commentedFilmPresenter.get(update.id).setCommentToDeleteAborting(FilmPresenterViewState.ABORTING);}
         }
         break;
     }
@@ -160,9 +167,9 @@ export default class BoardPresenter {
         if(this.#allFilmPresenter.has(data.id)) {
           this.#allFilmPresenter.get(data.id).updateCommentsList(data);}
         if(this.#topFilmPresenter.has(data.id)) {
-          this.#topFilmPresenter.get(data.id).init(data);}
+          this.#topFilmPresenter.get(data.id).updateCommentsList(data);}
         if(this.#commentedFilmPresenter.has(data.id)) {
-          this.#commentedFilmPresenter.get(data.id).init(data);}
+          this.#commentedFilmPresenter.get(data.id).updateCommentsList(data);}
         break;
     }
   }

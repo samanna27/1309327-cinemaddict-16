@@ -54,25 +54,22 @@ export default class CommentsModel extends AbstractObservable {
 
   deleteComment = async (updateType, update) => {
     const index = this.#comments.findIndex((comment) => comment.id === update.commentToDelete.id);
+    const commentIdIndex = update.commentsIds.findIndex((commentId) => commentId === update.commentToDelete.id);
 
     if (index === -1) {
       throw new Error('Can\'t delete unexisting comment');
     }
 
-    // this.#comments = [
-    //   ...this.#comments.slice(0, index),
-    //   ...this.#comments.slice(index + 1),
-    // ];
-
-    // this._notify(updateType, update);
     try {
-      // Обратите внимание, метод удаления задачи на сервере
-      // ничего не возвращает. Это и верно,
-      // ведь что можно вернуть при удалении задачи?
       await this.#apiService.deleteComment(update.commentToDelete);
       this.#comments = [
         ...this.#comments.slice(0, index),
         ...this.#comments.slice(index + 1),
+      ];
+
+      update.commentsIds = [
+        ...update.commentsIds.slice(0,commentIdIndex),
+        ...update.commentsIds.slice(commentIdIndex+1),
       ];
 
       update = {...update,...this.#comments};

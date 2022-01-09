@@ -32,7 +32,8 @@ export default class FilmPresenter {
   _popUpBottomSectionComponent = null;
   _newCommentComponent = null;
   #loadingComponent = new LoadingView();
-  _commentComponent = null;
+  #allCommentsComponents = new Map();
+  #commentToDeleteComponent = null;
 
   #film = null;
   #comments = null;
@@ -136,10 +137,11 @@ export default class FilmPresenter {
         return;
       }
       const comment = this.#comments.comments.find(requiredComment);
-      this._commentComponent = new CommentView(comment);
+      const commentComponent = new CommentView(comment);
+      this.#allCommentsComponents.set(comment.id, commentComponent);
 
-      render(commentsListComponent, this._commentComponent, renderPosition.BEFOREEND);
-      this._commentComponent.setCommentDeleteHandler(this.deleteCommentHandler);
+      render(commentsListComponent, commentComponent, renderPosition.BEFOREEND);
+      commentComponent.setCommentDeleteHandler(this.deleteCommentHandler);
     }
   }
 
@@ -203,11 +205,11 @@ export default class FilmPresenter {
     });
   }
 
-  setDeletion = (element) => {
-    this._commentComponent.updateData({
+  setDeletion = (update) => {
+    this.#commentToDeleteComponent = this.#allCommentsComponents.get(update.commentToDelete.id);
+    this.#commentToDeleteComponent.updateData ({
       isDisabled: true,
       isDeleting: true,
-      element,
     });
   }
 
@@ -224,12 +226,14 @@ export default class FilmPresenter {
 
   setCommentToDeleteAborting = () => {
     const resetFormState = () => {
-      this._commentComponent.updateData({
+      this.#commentToDeleteComponent.updateData({
         isDisabled: false,
+        isDeleting: false,
       });
+      this.#commentToDeleteComponent.setCommentDeleteHandler(this.deleteCommentHandler);
     };
 
-    this._commentComponent.shake(resetFormState);
+    this.#commentToDeleteComponent.shake(resetFormState);
   }
 
   createNewCommentHandler = (newComment) => {
@@ -242,10 +246,6 @@ export default class FilmPresenter {
   }
 
   deleteCommentHandler = (commentToDelete) => {
-    const commentIndex = this.#film.commentsIds.findIndex((commentId) => commentId === commentToDelete.id);
-
-    this.#film.commentsIds.splice(commentIndex,1);
-
     this.#changeData(
       UserAction.DELETE_COMMENT,
       UpdateType.PATCH,
