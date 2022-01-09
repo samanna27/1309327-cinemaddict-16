@@ -8,9 +8,9 @@ import ShowMoreButtonView from '../view/show-more-button';
 import TopFilmsSectionView from '../view/top-films-section';
 import CommentedFilmsSectionView from '../view/commented-films-section';
 import {FILM_CARD_COUNT_PER_STEP, TOP_COMMENTED_FILM_CARD_COUNT, SortType, UpdateType, UserAction, FilterType} from '../const';
-import {render, renderPosition, remove} from '../utils/render.js';
+import {render, renderPosition, remove, replace} from '../utils/render.js';
 import FilmPresenter, {State as FilmPresenterViewState} from './film-presenter';
-import { sortFilmDateDown, sortFilmRatingDown } from '../utils/films';
+import { sortFilmDateDown, sortFilmRatingDown, sortFilmCommentsDown } from '../utils/films';
 import { filters } from '../utils/filter';
 import { renderFooterStatistic } from '../main';
 
@@ -108,6 +108,8 @@ export default class BoardPresenter {
         try {
           await this.#commentsModel.addComment(updateType, update);
           this.#filmsModel.updateFilm(updateType, update);
+          // remove(this.#commentedFilmsContainerComponent);
+          // this.#renderCommentedFilms();
         } catch(err) {
           if(this.#allFilmPresenter.has(update.id)) {
             this.#allFilmPresenter.get(update.id).setAborting(FilmPresenterViewState.ABORTING);}
@@ -121,9 +123,9 @@ export default class BoardPresenter {
         if(this.#allFilmPresenter.has(update.id)) {
           this.#allFilmPresenter.get(update.id).setDeletion(update);}
         if(this.#topFilmPresenter.has(update.id)) {
-          this.#topFilmPresenter.get(update.id).setDeletion();}
+          this.#topFilmPresenter.get(update.id).setDeletion(update);}
         if(this.#commentedFilmPresenter.has(update.id)) {
-          this.#commentedFilmPresenter.get(update.id).setDeletion();}
+          this.#commentedFilmPresenter.get(update.id).setDeletion(update);}
         try {
           await this.#commentsModel.deleteComment(updateType, update);
           this.#filmsModel.updateFilm(updateType, update);
@@ -237,15 +239,17 @@ export default class BoardPresenter {
   #renderTopFilms =() => {
     render(this.#boardComponent, this.#topFilmsSectionComponent, renderPosition.BEFOREEND);
     render(this.#topFilmsSectionComponent, this.#topFilmsContainerComponent, renderPosition.BEFOREEND);
+    const zeroRatingFilmIndex = this.films.sort(sortFilmRatingDown).findIndex((film) => film.rating === 0);
 
-    this.films.slice(0, TOP_COMMENTED_FILM_CARD_COUNT).forEach((film) => this.#renderFilm(film, this.#topFilmsContainerComponent));
+    this.films.slice().sort(sortFilmRatingDown).slice(0,zeroRatingFilmIndex).slice(0, TOP_COMMENTED_FILM_CARD_COUNT).forEach((film) => this.#renderFilm(film, this.#topFilmsContainerComponent));
   }
 
   #renderCommentedFilms =() => {
     render(this.#boardComponent, this.#commentedFilmsSectionComponent, renderPosition.BEFOREEND);
     render(this.#commentedFilmsSectionComponent, this.#commentedFilmsContainerComponent, renderPosition.BEFOREEND);
+    const zeroCommentsFilmIndex = this.films.sort(sortFilmRatingDown).findIndex((film) => film.commentsIds.length === 0);
 
-    this.films.slice(0, TOP_COMMENTED_FILM_CARD_COUNT).forEach((film) => this.#renderFilm(film, this.#commentedFilmsContainerComponent));
+    this.films.slice().sort(sortFilmCommentsDown).slice(0,zeroCommentsFilmIndex).slice(0, TOP_COMMENTED_FILM_CARD_COUNT).forEach((film) => this.#renderFilm(film, this.#commentedFilmsContainerComponent));
   }
 
   #clearBoard = ({resetRenderedFilmsCount = false, resetSortType = false} = {}) => {

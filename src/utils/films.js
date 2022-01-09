@@ -36,6 +36,16 @@ export const sortFilmRatingDown = (filmA, filmB) => {
   return (filmB.rating-filmA.rating);
 };
 
+export const sortFilmCommentsDown = (filmA, filmB) => {
+  const weight = getWeightRatingDown(filmA.commentsIds.length, filmB.commentsIds.length);
+
+  if (weight !== null) {
+    return weight;
+  }
+
+  return (filmB.commentsIds.length-filmA.commentsIds.length);
+};
+
 export const isDatesEqual = (dateA, dateB) =>
   (dateA === null && dateB === null) ? true : dayjs(dateA).isSame(dateB, 'D');
 
