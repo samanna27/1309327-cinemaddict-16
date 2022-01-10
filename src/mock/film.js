@@ -79,9 +79,9 @@ const countries = [
 ];
 
 const generateDate = () => {
-  const maxYearsGap = 1;
-  const yearsGap = getRandomInteger(-maxYearsGap, 0);
-  return dayjs().add(yearsGap, 'year').toDate();
+  const maxDaysGap = 360;
+  const daysGap = getRandomInteger(-maxDaysGap, 0);
+  return dayjs().add(daysGap, 'day').toDate();
 };
 
 const MAX_DURATION = 150;
