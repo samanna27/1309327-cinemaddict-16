@@ -102,8 +102,6 @@ export default class NewCommentView extends SmartView {
 
   static parseCommentToData = (comment) => ({...comment,
     isDisabled: false,
-    // isSaving: false,
-    // isDeleting: false,
   });
 
   static parseDataToComment = (data) => {
