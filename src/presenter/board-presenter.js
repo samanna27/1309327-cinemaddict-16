@@ -8,7 +8,7 @@ import ShowMoreButtonView from '../view/show-more-button';
 import TopFilmsSectionView from '../view/top-films-section';
 import CommentedFilmsSectionView from '../view/commented-films-section';
 import {FILM_CARD_COUNT_PER_STEP, TOP_COMMENTED_FILM_CARD_COUNT, SortType, UpdateType, UserAction, FilterType} from '../const';
-import {render, renderPosition, remove, replace} from '../utils/render.js';
+import {render, renderPosition, remove} from '../utils/render.js';
 import FilmPresenter, {State as FilmPresenterViewState} from './film-presenter';
 import { sortFilmDateDown, sortFilmRatingDown, sortFilmCommentsDown } from '../utils/films';
 import { filters } from '../utils/filter';
@@ -108,8 +108,6 @@ export default class BoardPresenter {
         try {
           await this.#commentsModel.addComment(updateType, update);
           this.#filmsModel.updateFilm(updateType, update);
-          // remove(this.#commentedFilmsContainerComponent);
-          // this.#renderCommentedFilms();
         } catch(err) {
           if(this.#allFilmPresenter.has(update.id)) {
             this.#allFilmPresenter.get(update.id).setAborting(FilmPresenterViewState.ABORTING);}
@@ -241,6 +239,10 @@ export default class BoardPresenter {
     render(this.#topFilmsSectionComponent, this.#topFilmsContainerComponent, renderPosition.BEFOREEND);
     const zeroRatingFilmIndex = this.films.sort(sortFilmRatingDown).findIndex((film) => film.rating === 0);
 
+    if(zeroRatingFilmIndex === -1){
+      this.films.slice().sort(sortFilmRatingDown).slice(0, TOP_COMMENTED_FILM_CARD_COUNT).forEach((film) => this.#renderFilm(film, this.#topFilmsContainerComponent));
+      return;
+    }
     this.films.slice().sort(sortFilmRatingDown).slice(0,zeroRatingFilmIndex).slice(0, TOP_COMMENTED_FILM_CARD_COUNT).forEach((film) => this.#renderFilm(film, this.#topFilmsContainerComponent));
   }
 
@@ -249,7 +251,16 @@ export default class BoardPresenter {
     render(this.#commentedFilmsSectionComponent, this.#commentedFilmsContainerComponent, renderPosition.BEFOREEND);
     const zeroCommentsFilmIndex = this.films.sort(sortFilmRatingDown).findIndex((film) => film.commentsIds.length === 0);
 
-    this.films.slice().sort(sortFilmCommentsDown).slice(0,zeroCommentsFilmIndex).slice(0, TOP_COMMENTED_FILM_CARD_COUNT).forEach((film) => this.#renderFilm(film, this.#commentedFilmsContainerComponent));
+    if(zeroCommentsFilmIndex === -1){
+      this.films.slice().sort(sortFilmCommentsDown).slice(0, TOP_COMMENTED_FILM_CARD_COUNT).forEach((film) => this.#renderFilm(film, this.#commentedFilmsContainerComponent));
+      return;
+    }
+    this.films.slice().sort(sortFilmCommentsDown).slice(0,zeroCommentsFilmIndex).slice(0, TOP_COMMENTED_FILM_CARD_COUNT+1).forEach((film) => this.#renderFilm(film, this.#commentedFilmsContainerComponent));
+  }
+
+  rerenderCommentedFilmsComponent = () => {
+    remove(this.#commentedFilmsContainerComponent);
+    this.#renderCommentedFilms();
   }
 
   #clearBoard = ({resetRenderedFilmsCount = false, resetSortType = false} = {}) => {

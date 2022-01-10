@@ -7,7 +7,7 @@ import CommentsContainerView from '../view/comments-container';
 import CommentView from '../view/comment';
 import LoadingView from '../view/loading-view';
 import {isEscEvent} from '../utils/common';
-import {siteFooterElement} from '../main';
+import {siteFooterElement, boardPresenter} from '../main';
 import {render, renderPosition, remove, replace} from '../utils/render.js';
 import { UserAction, UpdateType } from '../const';
 
@@ -34,6 +34,7 @@ export default class FilmPresenter {
   #loadingComponent = new LoadingView();
   #allCommentsComponents = new Map();
   #commentToDeleteComponent = null;
+  #isCommentsChanged = false;
 
   #film = null;
   #comments = null;
@@ -237,24 +238,30 @@ export default class FilmPresenter {
   }
 
   createNewCommentHandler = (newComment) => {
+    this.#isCommentsChanged = true;
 
     this.#changeData(
       UserAction.ADD_COMMENT,
       UpdateType.PATCH,
-      {...this.#film, newComment},
+      {...this.#film, newComment, ...this.#isCommentsChanged},
     );
   }
 
   deleteCommentHandler = (commentToDelete) => {
+    this.#isCommentsChanged = true;
+
     this.#changeData(
       UserAction.DELETE_COMMENT,
       UpdateType.PATCH,
-      {...this.#film, commentToDelete},
+      {...this.#film, commentToDelete, ...this.#isCommentsChanged},
     );
   }
 
   #handlePopupClose = () => {
     this.#replacePopupToFilm();
+    if(this.#isCommentsChanged === true) {
+      boardPresenter.rerenderCommentedFilmsComponent();
+    }
   }
 
   #escKeyDownHandler = (evt) => {
@@ -262,6 +269,9 @@ export default class FilmPresenter {
       evt.preventDefault();
       this.#replacePopupToFilm();
       document.removeEventListener('keydown', this.#escKeyDownHandler);
+      if(this.#isCommentsChanged === true) {
+        boardPresenter.rerenderCommentedFilmsComponent();
+      }
     }
   }
 }
