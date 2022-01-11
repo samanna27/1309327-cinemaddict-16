@@ -1,3 +1,5 @@
+import { MIN_IN_HOUR } from '../const';
+
 const countFilmsWatched = (films) => films.filter((film) => (film.isAlreadyWatched === true)).length;
 const countAccumulatedDurationFilmsWatched = (films) => {
   const filmsWatched = films.filter((film) => (film.isAlreadyWatched === true));
@@ -5,8 +7,8 @@ const countAccumulatedDurationFilmsWatched = (films) => {
   for(const film of filmsWatched) {
     accumulatedDuration += film.duration;
   }
-  const hours = Math.floor(accumulatedDuration / 60, 0);
-  const min = accumulatedDuration % 60;
+  const hours = Math.floor(accumulatedDuration / MIN_IN_HOUR, 0);
+  const min = accumulatedDuration % MIN_IN_HOUR;
   const duration = new Object();
   duration.hours = hours;
   duration.min = min;

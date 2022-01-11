@@ -1,8 +1,9 @@
 export const FILM_CARD_COUNT_PER_STEP = 5;
 export const TOP_COMMENTED_FILM_CARD_COUNT = 2;
-export const FILM_CARD_MOCK_COUNT = 20;
-export const COMMENTS_QUANTITY = 100;
-export const COMMENTS_IN_FILM = 5;
+export const MIN_IN_HOUR = 60;
+export const DAYS_IN_MONTH = 30;
+export const DAYS_IN_YEAR = 360;
+export const ALL_TIME_YEARS = 120;
 export const GENRES = [
   'Comedy',
   'Drama',

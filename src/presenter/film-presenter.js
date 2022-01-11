@@ -25,6 +25,7 @@ export default class FilmPresenter {
   #filmListContainer = null;
   #changeData = null;
   #changeMode = null;
+  #yScroll = 0;
 
   #filmComponent = null;
   #popupComponent = null;
@@ -66,6 +67,7 @@ export default class FilmPresenter {
     this.#filmDetailsComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#filmDetailsComponent.setAlreadyWatchedClickHandler(this.#handleAlreadyWatchedClick);
     this.#filmDetailsComponent.setAddedToWatchlistClickHandler(this.#handleAddedToWatchlistClick);
+    this.#popupComponent.element.addEventListener('scroll', this.#handlePopupScroll);
 
     if(prevFilmComponent === null || prevFilmDetailsComponent === null) {
       render(this.#filmListContainer, this.#filmComponent, renderPosition.BEFOREEND);
@@ -113,6 +115,7 @@ export default class FilmPresenter {
 
     document.addEventListener('keydown', this.#escKeyDownHandler);
     document.querySelector('body').classList.add('hide-overflow');
+    this.#popupComponent.element.scrollTo(0, this.#yScroll);
     this.#filmDetailsComponent.setPopupCloseHandler(this.#handlePopupClose);
     this.#filmDetailsComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#filmDetailsComponent.setAlreadyWatchedClickHandler(this.#handleAlreadyWatchedClick);
@@ -199,6 +202,10 @@ export default class FilmPresenter {
       {...this.#film, isAddedToWatchlist: !this.#film.isAddedToWatchlist});
   }
 
+  #handlePopupScroll = (evt) => {
+    this.#yScroll = evt.target.scrollTop;
+  }
+
   setSaving = () => {
     this._newCommentComponent.updateData({
       isDisabled: true,
@@ -262,6 +269,7 @@ export default class FilmPresenter {
     if(this.#isCommentsChanged === true) {
       boardPresenter.rerenderCommentedFilmsComponent();
     }
+    this.#yScroll = 0;
   }
 
   #escKeyDownHandler = (evt) => {
@@ -272,6 +280,7 @@ export default class FilmPresenter {
       if(this.#isCommentsChanged === true) {
         boardPresenter.rerenderCommentedFilmsComponent();
       }
+      this.#yScroll = 0;
     }
   }
 }
