@@ -65,4 +65,6 @@ export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
+  INIT_COMMENTS: 'INIT_COMMENTS',
 };

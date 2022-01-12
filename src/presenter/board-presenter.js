@@ -1,4 +1,5 @@
 import NoFilmsMessageView from '../view/no-films-message';
+import LoadingView from '../view/loading-view';
 import SortFilmsView from '../view/sort-films';
 import BoardView from '../view/board';
 import AllFilmsSectionView from '../view/all-films-section';
@@ -11,6 +12,7 @@ import {render, renderPosition, remove} from '../utils/render.js';
 import FilmPresenter from './film-presenter';
 import { sortFilmDateDown, sortFilmRatingDown } from '../utils/films';
 import { filters } from '../utils/filter';
+import { renderFooterStatistic } from '../main';
 
 export default class BoardPresenter {
 
@@ -22,6 +24,7 @@ export default class BoardPresenter {
   #boardComponent = new BoardView();
   #noFilmsMessageComponent = null;
   #allFilmsSectionComponent = new AllFilmsSectionView();
+  #loadingComponent = new LoadingView();
   #filmsContainerComponent = new FilmsContainerView();
   #topFilmsContainerComponent = new FilmsContainerView();
   #commentedFilmsContainerComponent = new FilmsContainerView();
@@ -30,6 +33,7 @@ export default class BoardPresenter {
   #topFilmsSectionComponent = new TopFilmsSectionView();
   #commentedFilmsSectionComponent = new CommentedFilmsSectionView();
   #filterType = FilterType.ALL;
+  #isLoading = true;
 
   #renderedFilmsCount = FILM_CARD_COUNT_PER_STEP;
   #allFilmPresenter = new Map();
@@ -123,6 +127,20 @@ export default class BoardPresenter {
         this.#clearBoard({resetRenderedFilmsCount: true, resetSortType: true});
         this.#renderBoard();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderBoard();
+        renderFooterStatistic(this.#filmsModel.films);
+        break;
+      case UpdateType.INIT_COMMENTS:
+        if(this.#allFilmPresenter.has(data.id)) {
+          this.#allFilmPresenter.get(data.id).updateCommentsList(data);}
+        if(this.#topFilmPresenter.has(data.id)) {
+          this.#topFilmPresenter.get(data.id).init(data);}
+        if(this.#commentedFilmPresenter.has(data.id)) {
+          this.#commentedFilmPresenter.get(data.id).init(data);}
+        break;
     }
   }
 
@@ -139,7 +157,7 @@ export default class BoardPresenter {
   #renderSort = () => {
     this.#sortFilmsComponent = new SortFilmsView(this.#currentSortType);
     this.#sortFilmsComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
-    render(this.#boardComponent, this.#sortFilmsComponent, renderPosition.BEFOREEND);
+    render(this.#boardComponent, this.#sortFilmsComponent, renderPosition.BEFOREBEGIN);
   }
 
   #renderFilm = (film, container) => {
@@ -157,6 +175,10 @@ export default class BoardPresenter {
 
   #renderFilms = (films) => {
     films.forEach((film)=>this.#renderFilm(film, this.#filmsContainerComponent));
+  }
+
+  #renderLoading = () => {
+    render(this.#boardComponent, this.#loadingComponent, renderPosition.AFTERBEGIN);
   }
 
   #renderNoFilmsMessage = () => {
@@ -206,7 +228,7 @@ export default class BoardPresenter {
     this.#commentedFilmPresenter.clear();
 
     remove(this.#sortFilmsComponent);
-    // remove(this.#noFilmsMessageComponent);
+    remove(this.#loadingComponent);
     remove(this.#showMoreButtonComponent);
     remove(this.#topFilmsSectionComponent);
     remove(this.#commentedFilmsSectionComponent);
@@ -229,6 +251,11 @@ export default class BoardPresenter {
     const filmsCount = films.length;
 
     if(filmsCount === 0) {
+      if (this.#isLoading) {
+        this.#renderLoading();
+        return;
+      }
+
       this.#renderNoFilmsMessage();
       return;
     } else {

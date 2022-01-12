@@ -5,6 +5,7 @@ import PopUpBottomSectionView from '../view/pop-up-bottom-section';
 import NewCommentView from '../view/new-comment';
 import CommentsContainerView from '../view/comments-container';
 import CommentView from '../view/comment';
+import LoadingView from '../view/loading-view';
 import {isEscEvent} from '../utils/common';
 import {siteFooterElement} from '../main';
 import {render, renderPosition, remove, replace} from '../utils/render.js';
@@ -26,6 +27,7 @@ export default class FilmPresenter {
   #filmDetailsComponent = null;
   _popUpBottomSectionComponent = null;
   _newCommentComponent = null;
+  #loadingComponent = new LoadingView();
 
   #film = null;
   #comments = null;
@@ -37,9 +39,9 @@ export default class FilmPresenter {
     this.#changeMode = changeMode;
   }
 
-  init(film, filmComments) {
+  init(film, filmCommentsModel) {
     this.#film = film;
-    this.#comments = filmComments;
+    this.#comments = filmCommentsModel;
 
     const prevFilmComponent = this.#filmComponent;
     const prevPopupComponent = this.#popupComponent;
@@ -90,15 +92,15 @@ export default class FilmPresenter {
   }
 
   #renderPopup = () => {
+    this.#comments.init(this.#film);
     siteFooterElement.after(this.#popupComponent.element);
 
     const popupFormComponent = this.#popupComponent.element.querySelector('.film-details__inner');
-    const popUpBottomSectionComponent = new PopUpBottomSectionView(this.#film);
-    const commentsContainerComponent = popUpBottomSectionComponent.element.querySelector('.film-details__comments-wrap');
+    const commentsContainerComponent = this._popUpBottomSectionComponent.element.querySelector('.film-details__comments-wrap');
     this._newCommentComponent = new NewCommentView();
 
     render(popupFormComponent, this.#filmDetailsComponent, renderPosition.BEFOREEND);
-    render(popupFormComponent, popUpBottomSectionComponent, renderPosition.BEFOREEND);
+    render(popupFormComponent, this._popUpBottomSectionComponent, renderPosition.BEFOREEND);
     this.#renderCommentsList(commentsContainerComponent);
     render(commentsContainerComponent, this._newCommentComponent, renderPosition.BEFOREEND);
 
@@ -123,12 +125,30 @@ export default class FilmPresenter {
         }
         return false;
       };
+
+      if (this.#comments.comments.length === 0 || !this.#film.commentsIds.includes(this.#comments.comments[0].id)) {
+        render(commentsListComponent, this.#loadingComponent, renderPosition.AFTERBEGIN);
+        return;
+      }
       const comment = this.#comments.comments.find(requiredComment);
       const commentComponent = new CommentView(comment);
 
       render(commentsListComponent, commentComponent, renderPosition.BEFOREEND);
       commentComponent.setCommentDeleteHandler(this.deleteCommentHandler);
     }
+  }
+
+  updateCommentsList = (film) => {
+    remove(this.#loadingComponent);
+    const prevPopupBottonSectionComponent = this._popUpBottomSectionComponent;
+    this._popUpBottomSectionComponent = new PopUpBottomSectionView(film);
+    const commentsContainerComponent = this._popUpBottomSectionComponent.element.querySelector('.film-details__comments-wrap');
+    this._newCommentComponent = new NewCommentView();
+    replace(this._popUpBottomSectionComponent, prevPopupBottonSectionComponent);
+
+    this.#renderCommentsList(commentsContainerComponent);
+    render(commentsContainerComponent, this._newCommentComponent, renderPosition.BEFOREEND);
+    this._newCommentComponent.setCommentSubmitHandler(this.createNewCommentHandler);
   }
 
   #replaceFilmToPopup = () => {

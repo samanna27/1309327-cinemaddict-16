@@ -12,6 +12,7 @@ const renderStatsChart = (daysCtx, films) => {
   daysCtx.height = BAR_HEIGHT * 10;
   const uniqueGenresList = getUniqueGenresList(films);
   const filmsByGenre = getFilmsByGenre(films);
+  Chart.defaults.plugins.legend.display = false;
 
   return new Chart(daysCtx, {
     plugins: [ChartDataLabels],
