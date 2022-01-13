@@ -9,8 +9,8 @@ import TopFilmsSectionView from '../view/top-films-section';
 import CommentedFilmsSectionView from '../view/commented-films-section';
 import {FILM_CARD_COUNT_PER_STEP, TOP_COMMENTED_FILM_CARD_COUNT, SortType, UpdateType, UserAction, FilterType} from '../const';
 import {render, renderPosition, remove} from '../utils/render.js';
-import FilmPresenter from './film-presenter';
-import { sortFilmDateDown, sortFilmRatingDown } from '../utils/films';
+import FilmPresenter, {State as FilmPresenterViewState} from './film-presenter';
+import { sortFilmDateDown, sortFilmRatingDown, sortFilmCommentsDown } from '../utils/films';
 import { filters } from '../utils/filter';
 import { renderFooterStatistic } from '../main';
 
@@ -93,18 +93,48 @@ export default class BoardPresenter {
     this.#commentedFilmPresenter.forEach((presenter) => presenter.resetView());
   }
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_FILM:
         this.#filmsModel.updateFilm(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
-        this.#commentsModel.addComment(updateType, update);
-        this.#filmsModel.updateFilm(updateType, update);
+        if(this.#allFilmPresenter.has(update.id)) {
+          this.#allFilmPresenter.get(update.id).setSaving();}
+        if(this.#topFilmPresenter.has(update.id)) {
+          this.#topFilmPresenter.get(update.id).setSaving();}
+        if(this.#commentedFilmPresenter.has(update.id)) {
+          this.#commentedFilmPresenter.get(update.id).setSaving();}
+        try {
+          await this.#commentsModel.addComment(updateType, update);
+          this.#filmsModel.updateFilm(updateType, update);
+        } catch(err) {
+          if(this.#allFilmPresenter.has(update.id)) {
+            this.#allFilmPresenter.get(update.id).setAborting(FilmPresenterViewState.ABORTING);}
+          if(this.#topFilmPresenter.has(update.id)) {
+            this.#topFilmPresenter.get(update.id).setAborting(FilmPresenterViewState.ABORTING);}
+          if(this.#commentedFilmPresenter.has(update.id)) {
+            this.#commentedFilmPresenter.get(update.id).setAborting(FilmPresenterViewState.ABORTING);}
+        }
         break;
       case UserAction.DELETE_COMMENT:
-        this.#commentsModel.deleteComment(updateType, update);
-        this.#filmsModel.updateFilm(updateType, update);
+        if(this.#allFilmPresenter.has(update.id)) {
+          this.#allFilmPresenter.get(update.id).setDeletion(update);}
+        if(this.#topFilmPresenter.has(update.id)) {
+          this.#topFilmPresenter.get(update.id).setDeletion(update);}
+        if(this.#commentedFilmPresenter.has(update.id)) {
+          this.#commentedFilmPresenter.get(update.id).setDeletion(update);}
+        try {
+          await this.#commentsModel.deleteComment(updateType, update);
+          this.#filmsModel.updateFilm(updateType, update);
+        } catch (err) {
+          if(this.#allFilmPresenter.has(update.id)) {
+            this.#allFilmPresenter.get(update.id).setCommentToDeleteAborting(FilmPresenterViewState.ABORTING);}
+          if(this.#topFilmPresenter.has(update.id)) {
+            this.#topFilmPresenter.get(update.id).setCommentToDeleteAborting(FilmPresenterViewState.ABORTING);}
+          if(this.#commentedFilmPresenter.has(update.id)) {
+            this.#commentedFilmPresenter.get(update.id).setCommentToDeleteAborting(FilmPresenterViewState.ABORTING);}
+        }
         break;
     }
   }
@@ -137,9 +167,9 @@ export default class BoardPresenter {
         if(this.#allFilmPresenter.has(data.id)) {
           this.#allFilmPresenter.get(data.id).updateCommentsList(data);}
         if(this.#topFilmPresenter.has(data.id)) {
-          this.#topFilmPresenter.get(data.id).init(data);}
+          this.#topFilmPresenter.get(data.id).updateCommentsList(data);}
         if(this.#commentedFilmPresenter.has(data.id)) {
-          this.#commentedFilmPresenter.get(data.id).init(data);}
+          this.#commentedFilmPresenter.get(data.id).updateCommentsList(data);}
         break;
     }
   }
@@ -207,15 +237,30 @@ export default class BoardPresenter {
   #renderTopFilms =() => {
     render(this.#boardComponent, this.#topFilmsSectionComponent, renderPosition.BEFOREEND);
     render(this.#topFilmsSectionComponent, this.#topFilmsContainerComponent, renderPosition.BEFOREEND);
+    const zeroRatingFilmIndex = this.films.sort(sortFilmRatingDown).findIndex((film) => film.rating === 0);
 
-    this.films.slice(0, TOP_COMMENTED_FILM_CARD_COUNT).forEach((film) => this.#renderFilm(film, this.#topFilmsContainerComponent));
+    if(zeroRatingFilmIndex === -1){
+      this.films.slice().sort(sortFilmRatingDown).slice(0, TOP_COMMENTED_FILM_CARD_COUNT).forEach((film) => this.#renderFilm(film, this.#topFilmsContainerComponent));
+      return;
+    }
+    this.films.slice().sort(sortFilmRatingDown).slice(0,zeroRatingFilmIndex).slice(0, TOP_COMMENTED_FILM_CARD_COUNT).forEach((film) => this.#renderFilm(film, this.#topFilmsContainerComponent));
   }
 
   #renderCommentedFilms =() => {
     render(this.#boardComponent, this.#commentedFilmsSectionComponent, renderPosition.BEFOREEND);
     render(this.#commentedFilmsSectionComponent, this.#commentedFilmsContainerComponent, renderPosition.BEFOREEND);
+    const zeroCommentsFilmIndex = this.films.sort(sortFilmRatingDown).findIndex((film) => film.commentsIds.length === 0);
 
-    this.films.slice(0, TOP_COMMENTED_FILM_CARD_COUNT).forEach((film) => this.#renderFilm(film, this.#commentedFilmsContainerComponent));
+    if(zeroCommentsFilmIndex === -1){
+      this.films.slice().sort(sortFilmCommentsDown).slice(0, TOP_COMMENTED_FILM_CARD_COUNT).forEach((film) => this.#renderFilm(film, this.#commentedFilmsContainerComponent));
+      return;
+    }
+    this.films.slice().sort(sortFilmCommentsDown).slice(0,zeroCommentsFilmIndex).slice(0, TOP_COMMENTED_FILM_CARD_COUNT+1).forEach((film) => this.#renderFilm(film, this.#commentedFilmsContainerComponent));
+  }
+
+  rerenderCommentedFilmsComponent = () => {
+    remove(this.#commentedFilmsContainerComponent);
+    this.#renderCommentedFilms();
   }
 
   #clearBoard = ({resetRenderedFilmsCount = false, resetSortType = false} = {}) => {

@@ -67,4 +67,4 @@ const renderFooterStatistic = (films) => {
   replace(footerStatisticsComponent, prevFooterStatisticComponent);
 };
 
-export {siteFooterElement, switchScreen, renderFooterStatistic};
+export {siteFooterElement, switchScreen, renderFooterStatistic, boardPresenter};

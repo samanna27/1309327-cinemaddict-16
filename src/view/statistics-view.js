@@ -3,12 +3,12 @@ import dayjs from 'dayjs';
 import { Chart, registerables} from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { countFilmsWatched, countAccumulatedDurationFilmsWatched, getUniqueGenresList, getFilmsByGenre, getTopGenre, periodFilterTypes } from '../utils/statistics';
+import { DAYS_IN_MONTH, DAYS_IN_YEAR, ALL_TIME_YEARS } from '../const';
 
 const renderStatsChart = (daysCtx, films) => {
   Chart.register(...registerables);
   const BAR_HEIGHT = 50;
 
-  // Обязательно рассчитайте высоту canvas, она зависит от количества элементов диаграммы
   daysCtx.height = BAR_HEIGHT * 10;
   const uniqueGenresList = getUniqueGenresList(films);
   const filmsByGenre = getFilmsByGenre(films);
@@ -183,17 +183,17 @@ export default class StatisticsView extends SmartView {
         break;
       case ('month'):
         this.updateData({
-          dateFrom: dayjs().subtract(30, 'day').toDate(),
+          dateFrom: dayjs().subtract(DAYS_IN_MONTH, 'day').toDate(),
         });
         break;
       case ('year'):
         this.updateData({
-          dateFrom: dayjs().subtract(360, 'day').toDate(),
+          dateFrom: dayjs().subtract(DAYS_IN_YEAR, 'day').toDate(),
         });
         break;
       default:
         this.updateData({
-          dateFrom: dayjs().subtract(120, 'year').toDate(),
+          dateFrom: dayjs().subtract(ALL_TIME_YEARS, 'year').toDate(),
         });
         break;
     }

@@ -7,10 +7,14 @@ import CommentsContainerView from '../view/comments-container';
 import CommentView from '../view/comment';
 import LoadingView from '../view/loading-view';
 import {isEscEvent} from '../utils/common';
-import {siteFooterElement} from '../main';
+import {siteFooterElement, boardPresenter} from '../main';
 import {render, renderPosition, remove, replace} from '../utils/render.js';
-import { nanoid } from 'nanoid';
 import { UserAction, UpdateType } from '../const';
+
+export const State = {
+  DELETING: 'DELETING',
+  ABORTING: 'ABORTING',
+};
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -21,6 +25,7 @@ export default class FilmPresenter {
   #filmListContainer = null;
   #changeData = null;
   #changeMode = null;
+  #yScroll = 0;
 
   #filmComponent = null;
   #popupComponent = null;
@@ -28,6 +33,9 @@ export default class FilmPresenter {
   _popUpBottomSectionComponent = null;
   _newCommentComponent = null;
   #loadingComponent = new LoadingView();
+  #allCommentsComponents = new Map();
+  #commentToDeleteComponent = null;
+  #isCommentsChanged = false;
 
   #film = null;
   #comments = null;
@@ -59,6 +67,7 @@ export default class FilmPresenter {
     this.#filmDetailsComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#filmDetailsComponent.setAlreadyWatchedClickHandler(this.#handleAlreadyWatchedClick);
     this.#filmDetailsComponent.setAddedToWatchlistClickHandler(this.#handleAddedToWatchlistClick);
+    this.#popupComponent.element.addEventListener('scroll', this.#handlePopupScroll);
 
     if(prevFilmComponent === null || prevFilmDetailsComponent === null) {
       render(this.#filmListContainer, this.#filmComponent, renderPosition.BEFOREEND);
@@ -106,6 +115,7 @@ export default class FilmPresenter {
 
     document.addEventListener('keydown', this.#escKeyDownHandler);
     document.querySelector('body').classList.add('hide-overflow');
+    this.#popupComponent.element.scrollTo(0, this.#yScroll);
     this.#filmDetailsComponent.setPopupCloseHandler(this.#handlePopupClose);
     this.#filmDetailsComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#filmDetailsComponent.setAlreadyWatchedClickHandler(this.#handleAlreadyWatchedClick);
@@ -132,6 +142,7 @@ export default class FilmPresenter {
       }
       const comment = this.#comments.comments.find(requiredComment);
       const commentComponent = new CommentView(comment);
+      this.#allCommentsComponents.set(comment.id, commentComponent);
 
       render(commentsListComponent, commentComponent, renderPosition.BEFOREEND);
       commentComponent.setCommentDeleteHandler(this.deleteCommentHandler);
@@ -191,33 +202,74 @@ export default class FilmPresenter {
       {...this.#film, isAddedToWatchlist: !this.#film.isAddedToWatchlist});
   }
 
+  #handlePopupScroll = (evt) => {
+    this.#yScroll = evt.target.scrollTop;
+  }
+
+  setSaving = () => {
+    this._newCommentComponent.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setDeletion = (update) => {
+    this.#commentToDeleteComponent = this.#allCommentsComponents.get(update.commentToDelete.id);
+    this.#commentToDeleteComponent.updateData ({
+      isDisabled: true,
+      isDeleting: true,
+    });
+  }
+
+  setAborting = () => {
+    const resetFormState = () => {
+      this._newCommentComponent.updateData({
+        isDisabled: false,
+      });
+      this._newCommentComponent.setCommentSubmitHandler(this.createNewCommentHandler);
+    };
+
+    this._newCommentComponent.shake(resetFormState);
+  }
+
+  setCommentToDeleteAborting = () => {
+    const resetFormState = () => {
+      this.#commentToDeleteComponent.updateData({
+        isDisabled: false,
+        isDeleting: false,
+      });
+      this.#commentToDeleteComponent.setCommentDeleteHandler(this.deleteCommentHandler);
+    };
+
+    this.#commentToDeleteComponent.shake(resetFormState);
+  }
 
   createNewCommentHandler = (newComment) => {
-    newComment.id = nanoid();
-    this.#film.commentsIds.push(newComment.id);
-    this.#comments.comments.push(newComment);
+    this.#isCommentsChanged = true;
 
     this.#changeData(
       UserAction.ADD_COMMENT,
       UpdateType.PATCH,
-      {...this.#film, newComment},
+      {...this.#film, newComment, ...this.#isCommentsChanged},
     );
   }
 
   deleteCommentHandler = (commentToDelete) => {
-    const commentIndex = this.#film.commentsIds.findIndex((commentId) => commentId === commentToDelete.id);
-
-    this.#film.commentsIds.splice(commentIndex,1);
+    this.#isCommentsChanged = true;
 
     this.#changeData(
       UserAction.DELETE_COMMENT,
       UpdateType.PATCH,
-      {...this.#film, commentToDelete},
+      {...this.#film, commentToDelete, ...this.#isCommentsChanged},
     );
   }
 
   #handlePopupClose = () => {
     this.#replacePopupToFilm();
+    if(this.#isCommentsChanged === true) {
+      boardPresenter.rerenderCommentedFilmsComponent();
+    }
+    this.#yScroll = 0;
   }
 
   #escKeyDownHandler = (evt) => {
@@ -225,6 +277,10 @@ export default class FilmPresenter {
       evt.preventDefault();
       this.#replacePopupToFilm();
       document.removeEventListener('keydown', this.#escKeyDownHandler);
+      if(this.#isCommentsChanged === true) {
+        boardPresenter.rerenderCommentedFilmsComponent();
+      }
+      this.#yScroll = 0;
     }
   }
 }
