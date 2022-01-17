@@ -51,7 +51,7 @@ export default class MoviesModel extends AbstractObservable {
         ...this.#films.slice(index + 1),
       ];
     } catch(err) {
-      throw new Error('Can\'t update task');
+      throw new Error('Can\'t update film');
     }
 
     if(!notNotify) {
