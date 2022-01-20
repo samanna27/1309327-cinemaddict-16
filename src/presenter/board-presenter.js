@@ -304,16 +304,16 @@ export default class BoardPresenter {
 
       this.#renderNoFilmsMessage();
       return;
-    } else {
-      this.#renderSort();
-      render(this.#boardComponent, this.#allFilmsSectionComponent, renderPosition.BEFOREEND);
-      render(this.#allFilmsSectionComponent, this.#filmsContainerComponent, renderPosition.BEFOREEND);
+    }
 
-      this.#renderFilms(films.slice(0, Math.min(filmsCount, this.#renderedFilmsCount)));
+    this.#renderSort();
+    render(this.#boardComponent, this.#allFilmsSectionComponent, renderPosition.BEFOREEND);
+    render(this.#allFilmsSectionComponent, this.#filmsContainerComponent, renderPosition.BEFOREEND);
 
-      if(filmsCount > this.#renderedFilmsCount) {
-        this.#renderShowMoreButton();
-      }
+    this.#renderFilms(films.slice(0, Math.min(filmsCount, this.#renderedFilmsCount)));
+
+    if(filmsCount > this.#renderedFilmsCount) {
+      this.#renderShowMoreButton();
     }
 
     this.#renderTopFilms();
