@@ -9,7 +9,7 @@ const makeHumanDate = (date) => {
   if(dayjs(date).isAfter(dayjs(currentDate).subtract(5, 'minutes'))) {
     return 'now';
   } else if (dayjs(date).isAfter(dayjs().subtract(60, 'minutes'))) {
-    return 'few minutes ago';
+    return 'a few minutes ago';
   } else if (dayjs(date).isAfter(dayjs().subtract(24, 'hours'))) {
     period = Math.floor(dayjs().diff(dayjs(date), 'hour', true),0);
     return `${period} ${period === 1 ? 'hour' : 'hours'} ago`;
@@ -52,7 +52,7 @@ export default class CommentsModel extends AbstractObservable {
   #adaptToClient = (comment) => {
     const adaptedComment = {...comment,
       emoji: comment.emotion,
-      date: makeHumanDate(dayjs(comment.date).format('YYYY/MM/DD HH:MM')),
+      date: makeHumanDate(dayjs(comment.date).format('YYYY/MM/DD HH:mm')),
       text: comment.comment,
     };
 
