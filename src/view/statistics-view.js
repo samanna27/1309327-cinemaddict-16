@@ -125,7 +125,7 @@ export default class StatisticsView extends SmartView {
 
     this._data = {
       films,
-      dateFrom: dayjs().subtract(100, 'year').toDate(),
+      dateFrom: dayjs().subtract(ALL_TIME_YEARS, 'year').toDate(),
       dateTo: dayjs().toDate(),
     };
 

@@ -1,7 +1,7 @@
 import {remove, render, renderPosition, replace} from './utils/render.js';
-import UserProfileView from './view/user-profile';
-import MenuContainerView from './view/menu-container';
-import FooterStatisticsView from './view/footer-statistics';
+import UserProfileView from './view/user-profile-view';
+import MenuContainerView from './view/menu-container-view';
+import FooterStatisticsView from './view/footer-statistics-view';
 import StatisticsView from './view/statistics-view';
 import {FilterType} from './const';
 import BoardPresemter from './presenter/board-presenter.js';

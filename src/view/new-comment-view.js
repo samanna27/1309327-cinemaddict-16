@@ -91,7 +91,7 @@ export default class NewCommentView extends SmartView {
       } else {
         elementToCheck.setCustomValidity('');
         this.updateData({
-          date: dayjs().format('YYYY/MM/DD HH:MM'),
+          date: dayjs().format('YYYY/MM/DD HH:mm'),
         }, true);
         this._callback.commentSubmit(NewCommentView.parseDataToComment(this._data));
         document.removeEventListener('keydown', this.#commentSubmitHandler);

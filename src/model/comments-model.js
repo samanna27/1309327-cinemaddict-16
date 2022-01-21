@@ -2,28 +2,7 @@ import AbstractObservable from '../utils/abstract-observable';
 import { UpdateType } from '../const';
 import dayjs from 'dayjs';
 import { adaptToClient } from '../utils/films';
-
-const makeHumanDate = (date) => {
-  let period = 0;
-  const currentDate =new Date();
-  if(dayjs(date).isAfter(dayjs(currentDate).subtract(5, 'minutes'))) {
-    return 'now';
-  } else if (dayjs(date).isAfter(dayjs().subtract(60, 'minutes'))) {
-    return 'a few minutes ago';
-  } else if (dayjs(date).isAfter(dayjs().subtract(24, 'hours'))) {
-    period = Math.floor(dayjs().diff(dayjs(date), 'hour', true),0);
-    return `${period} ${period === 1 ? 'hour' : 'hours'} ago`;
-  } else if (dayjs(date).isAfter(dayjs().subtract(30, 'days'))) {
-    period = Math.floor(dayjs().diff(dayjs(date), 'day', true),0);
-    return `${period} ${period === 1 ? 'day' : 'days'} ago`;
-  } else if (dayjs(date).isAfter(dayjs().subtract(12, 'months'))) {
-    period = Math.floor(dayjs().diff(dayjs(date), 'month', true),0);
-    return `${period} ${period === 1 ? 'month' : 'months'} ago`;
-  } else if (dayjs(date).isAfter(dayjs().subtract(100, 'years'))) {
-    period = Math.floor(dayjs().diff(dayjs(date), 'year', true),0);
-    return `${period} ${period === 1 ? 'year' : 'years'} ago`;
-  }
-};
+import { makeHumanDate } from '../utils/common';
 
 export default class CommentsModel extends AbstractObservable {
   #apiService = null;

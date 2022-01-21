@@ -1,8 +1,8 @@
-import MenuFiltersView from '../view/menu-filters.js';
+import MenuFiltersView from '../view/menu-filters-view.js';
 import {render, renderPosition, replace, remove} from '../utils/render.js';
 import {filters} from '../utils/filter.js';
 import {FilterType, UpdateType} from '../const.js';
-import MenuStatisticsView from '../view/menu-statistics';
+import MenuStatisticsView from '../view/menu-statistics-view';
 import { switchScreen } from '../main.js';
 
 export default class FilterPresenter {

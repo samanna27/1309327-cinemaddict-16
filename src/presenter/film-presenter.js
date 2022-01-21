@@ -1,10 +1,10 @@
-import FilmCardView from '../view/film-card';
-import PopUpContainerView from '../view/pop-up-container';
-import FilmDetailsView from '../view/film-details';
-import PopUpBottomSectionView from '../view/pop-up-bottom-section';
-import NewCommentView from '../view/new-comment';
-import CommentsContainerView from '../view/comments-container';
-import CommentView from '../view/comment';
+import FilmCardView from '../view/film-card-view';
+import PopUpContainerView from '../view/pop-up-container-view';
+import FilmDetailsView from '../view/film-details-view';
+import PopUpBottomSectionView from '../view/pop-up-bottom-section-view';
+import NewCommentView from '../view/new-comment-view';
+import CommentsContainerView from '../view/comments-container-view';
+import CommentView from '../view/comment-view';
 import LoadingView from '../view/loading-view';
 import {isEscEvent} from '../utils/common';
 import {siteFooterElement, boardPresenter} from '../main';
@@ -68,7 +68,7 @@ export default class FilmPresenter {
     this.#filmDetailsComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#filmDetailsComponent.setAlreadyWatchedClickHandler(this.#handleAlreadyWatchedClick);
     this.#filmDetailsComponent.setAddedToWatchlistClickHandler(this.#handleAddedToWatchlistClick);
-    this.#popupComponent.element.addEventListener('scroll', this.#handlePopupScroll);
+    this.#popupComponent.element.addEventListener('scroll', this.#popupScrollHandler);
 
     if(prevFilmComponent === null || prevFilmDetailsComponent === null) {
       render(this.#filmListContainer, this.#filmComponent, renderPosition.BEFOREEND);
@@ -206,7 +206,7 @@ export default class FilmPresenter {
       {...this.#film, isAddedToWatchlist: !this.#film.isAddedToWatchlist});
   }
 
-  #handlePopupScroll = (evt) => {
+  #popupScrollHandler = (evt) => {
     this.#yScroll = evt.target.scrollTop;
   }
 
