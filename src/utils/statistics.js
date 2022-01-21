@@ -39,7 +39,7 @@ const getFilmsByGenre = (films) => {
 const getTopGenre = (films) => {
   const genres = getUniqueGenresList(films);
   const filmsByGenre = getFilmsByGenre(films);
-  const topGenreFilmsNumber = Math.max(...filmsByGenre);
+  const topGenreFilmsIndex = Math.max(...filmsByGenre);
 
   const genresFilmsPairs = [];
   let count = 0;
@@ -47,14 +47,14 @@ const getTopGenre = (films) => {
     genresFilmsPairs.push({name: genre, count: filmsByGenre[count]});
     count ++;
   }
-  const topGenre = [];
+  const topGenres = [];
   for(const pair of genresFilmsPairs) {
-    if(pair.count === topGenreFilmsNumber) {
-      topGenre.push(pair.name);
+    if(pair.count === topGenreFilmsIndex) {
+      topGenres.push(pair.name);
     }
   }
 
-  return [...topGenre];
+  return [...topGenres];
 };
 
 const periodFilterTypes = [{

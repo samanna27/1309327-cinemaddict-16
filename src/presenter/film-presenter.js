@@ -10,6 +10,7 @@ import {isEscEvent} from '../utils/common';
 import {siteFooterElement, boardPresenter} from '../main';
 import {render, renderPosition, remove, replace} from '../utils/render.js';
 import { UserAction, UpdateType } from '../const';
+import dayjs from 'dayjs';
 
 export const State = {
   DELETING: 'DELETING',
@@ -129,7 +130,7 @@ export default class FilmPresenter {
     render(container, commentsListComponent, renderPosition.BEFOREEND);
 
     for ( const commentId of this.#film.commentsIds) {
-      const requiredComment = (element) => {
+      const getRequiredComment = (element) => {
         if(element.id === commentId) {
           return element;
         }
@@ -140,7 +141,7 @@ export default class FilmPresenter {
         render(commentsListComponent, this.#loadingComponent, renderPosition.AFTERBEGIN);
         return;
       }
-      const comment = this.#comments.comments.find(requiredComment);
+      const comment = this.#comments.comments.find(getRequiredComment);
       const commentComponent = new CommentView(comment);
       this.#allCommentsComponents.set(comment.id, commentComponent);
 
@@ -192,7 +193,10 @@ export default class FilmPresenter {
     this.#changeData(
       UserAction.UPDATE_FILM,
       UpdateType.PATCH,
-      {...this.#film, isAlreadyWatched: !this.#film.isAlreadyWatched});
+      {...this.#film,
+        isAlreadyWatched: !this.#film.isAlreadyWatched,
+        watchedDate: this.#film.isAlreadyWatched === false ? dayjs().toDate(): null,
+      });
   }
 
   #handleAddedToWatchlistClick = () => {

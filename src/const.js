@@ -4,14 +4,6 @@ export const MIN_IN_HOUR = 60;
 export const DAYS_IN_MONTH = 30;
 export const DAYS_IN_YEAR = 360;
 export const ALL_TIME_YEARS = 120;
-export const GENRES = [
-  'Comedy',
-  'Drama',
-  'Western',
-  'Musical',
-  'Cartoon',
-  'Mystery',
-];
 
 export const BLANK_FILM = {
   id: '',

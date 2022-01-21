@@ -9,7 +9,7 @@ const createSortFilmsTemplate = (currentSortType) => (
 </ul>`
 );
 
-export default class SoreFilmsView extends AbstractView {
+export default class SortFilmsView extends AbstractView {
   #currentSortType = null;
 
   constructor(currentSortType) {

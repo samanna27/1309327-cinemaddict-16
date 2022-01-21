@@ -40,11 +40,11 @@ render(siteMainElement, menuComponent, renderPosition.BEFOREEND);
 filterPresenter.init();
 boardPresenter.init();
 
-const switchScreen = (filterType) => {
+const switchScreen = (filterType, films) => {
   switch(filterType) {
     case FilterType.STATS:
       boardPresenter.destroy();
-      statisticsComponent = new StatisticsView(moviesModel.films, periodFilterTypes[0].name);
+      statisticsComponent = new StatisticsView(films, periodFilterTypes[0].name);
       render(siteMainElement, statisticsComponent, renderPosition.BEFOREEND);
       break;
     default:

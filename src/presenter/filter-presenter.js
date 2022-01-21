@@ -87,6 +87,6 @@ export default class FilterPresenter {
     }
 
     this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
-    switchScreen(filterType);
+    switchScreen(filterType, this.#filmsModel.films);
   }
 }
